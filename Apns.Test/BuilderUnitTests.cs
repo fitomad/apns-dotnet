@@ -1,5 +1,4 @@
-﻿using Apns;
-using Apns.Entities;
+﻿using Apns.Entities;
 
 namespace Apns.Test;
 
@@ -10,7 +9,7 @@ public class BuilderUnitTests
     {
         Assert.Throws<EnvironmentNotSetException>(() =>
         {
-            var settings = new ApnsSettingsBuilder()
+            new ApnsSettingsBuilder()
                 .SetTopic("fake-topic")
                 .Build();
         });
@@ -23,7 +22,7 @@ public class BuilderUnitTests
     {
         Assert.Throws<AuthorizationNotSetException>(() =>
         {
-            var settings = new ApnsSettingsBuilder()
+            new ApnsSettingsBuilder()
                 .InEnvironment(environment)
                 .SetTopic("fake-topic")
                 .Build();
@@ -39,7 +38,7 @@ public class BuilderUnitTests
         {
             var token = new ApnsJsonToken(content: "");
             
-            var settings = new ApnsSettingsBuilder()
+            new ApnsSettingsBuilder()
                 .InEnvironment(environment)
                 .SetTopic("fake-topic")
                 .WithJsonToken(token)
@@ -55,7 +54,7 @@ public class BuilderUnitTests
     {
         Assert.Throws<TopicNotSetException>(() =>
         {
-            var settings = new ApnsSettingsBuilder()
+            new ApnsSettingsBuilder()
                 .InEnvironment(environment)
                 .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.cer")
                 .Build();

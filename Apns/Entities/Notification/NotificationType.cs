@@ -6,12 +6,35 @@ public enum NotificationType
     Background,
     Controls,
     Location,
-    VoIP,
+    VoIp,
     Complication,
     FileProvider,
     Mdm,
     LiveActivity,
     PushToTalk
+}
+
+public static class NotificationTypeExtensions
+{
+    public static string GetApnsValue(this NotificationType notificationType)
+    {
+        var value = notificationType switch
+        {
+            NotificationType.Alert => "alert",
+            NotificationType.Background => "background",
+            NotificationType.Controls => "controls",
+            NotificationType.Location => "location",
+            NotificationType.VoIp => "voip",
+            NotificationType.Complication => "complication",
+            NotificationType.FileProvider => "fileprovider",
+            NotificationType.Mdm => "mdm",
+            NotificationType.LiveActivity => "liveactivity",
+            NotificationType.PushToTalk => "pushtotalk",
+            _ => throw new ArgumentOutOfRangeException(nameof(notificationType), notificationType, null)
+        };
+
+        return value;
+    }
 }
 
 public enum LiveActivityEvent

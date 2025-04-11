@@ -1,5 +1,6 @@
 ﻿using System.Security.Cryptography.X509Certificates;
 using Apns.Entities;
+using Apns.Validation;
 
 namespace Apns;
 
@@ -151,29 +152,28 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
 
     public ApnsSettings Build()
     {
-        if(string.IsNullOrEmpty(_settings.Host))
-        {
-            // Environment is mandatory
-            throw new EnvironmentNotSetException();
-        }
+        new Rule()
+            .Check(() => string.IsNullOrEmpty(_settings.Host))
+            .OnSuccess(() => throw new EnvironmentNotSetException())
+            .Validate();
 
-        if(string.IsNullOrEmpty(_settings.Topic))
-        {
-            throw new TopicNotSetException();
-        }
-        
-        if(_settings.IsTokenAuthorizationBased && _settings.IsCertificateAuthorizationBased)
-        {
-            // Only JWT or Certificate valid, not both
-            throw new DuplicatedAuthorizationException();
-        }
+        new Rule()
+            .Check(() => string.IsNullOrEmpty(_settings.Topic))
+            .OnSuccess(() => throw new TopicNotSetException())
+            .Validate();
 
-        if(!_settings.IsTokenAuthorizationBased && !_settings.IsCertificateAuthorizationBased)
-        {
-            // You must set an authorization mechanism
-            throw new AuthorizationNotSetException();
-        }
-        
+        new Rule()
+            .Check(() => _settings.IsCertificateAuthorizationBased)
+            .Check(() => _settings.IsTokenAuthorizationBased)
+            .OnSuccess(() => throw new DuplicatedAuthorizationException())
+            .Validate();
+
+        new Rule()
+            .Check(() => !_settings.IsCertificateAuthorizationBased)
+            .Check(() => !_settings.IsTokenAuthorizationBased)
+            .OnSuccess(() => throw new AuthorizationNotSetException())
+            .Validate();
+
         return _settings;
     }
 

@@ -1,23 +1,15 @@
-using System.Configuration;
-using System.Diagnostics;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Apns.Entities;
 using Apns.Entities.Notification;
 using Apns.Extensions;
 
-using System.Text;
-using System.Text.Json;
-using System.Net;
-using System.Net.Http.Headers;
-
-
 namespace Apns.Test;
 
 public class ClientTests
 {
-    private string _apiKey;
-    private IApnsClient _client;
+    private readonly IApnsClient _client;
+
+    private const string DeviceToken = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
     
     public ClientTests()
     {
@@ -37,8 +29,6 @@ public class ClientTests
     [Fact]
     public async Task TestConnection()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new Alert()
         {
             Title = "Test Alert",
@@ -50,7 +40,7 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-       ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+       ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
        
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -58,8 +48,6 @@ public class ClientTests
     [Fact]
     public async Task TestLocalizableNotification()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title",
@@ -71,7 +59,7 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -79,8 +67,6 @@ public class ClientTests
     [Fact]
     public async Task TestLocalizableArgumentsNotification()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title_arg",
@@ -95,7 +81,7 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -103,8 +89,6 @@ public class ClientTests
     [Fact]
     public async Task TestBadge()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title",
@@ -117,7 +101,7 @@ public class ClientTests
             .WithBadgeCount(1)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -125,8 +109,6 @@ public class ClientTests
     [Fact]
     public async Task TestBadgeRemove()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title",
@@ -139,7 +121,7 @@ public class ClientTests
             .WithBadgeCount(0)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -147,8 +129,6 @@ public class ClientTests
     [Fact]
     public async Task TestBadgeRemoveWithDedicatedMethod()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title",
@@ -161,7 +141,7 @@ public class ClientTests
             .ClearBadgeCount()
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
     }
@@ -173,8 +153,6 @@ public class ClientTests
     [InlineData(InterruptionLevel.Critical, "critical")]
     public async Task TestInterruptionLevel(InterruptionLevel level, string expectedLevel)
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title_arg",
@@ -192,7 +170,7 @@ public class ClientTests
 
         Assert.Equal(notification.InterruptionLevel, expectedLevel);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
     }
@@ -206,8 +184,6 @@ public class ClientTests
     [InlineData(1.0)]
     public async Task TestRelevance(double relevance)
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title_arg",
@@ -225,7 +201,7 @@ public class ClientTests
 
         Assert.Equal(notification.RelevanceScore, relevance);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
     }
@@ -236,8 +212,6 @@ public class ClientTests
     [InlineData("Grupo Tres")]
     public async Task TestThreadIdGroup(string group)
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title_arg",
@@ -255,7 +229,7 @@ public class ClientTests
 
         Assert.Equal(notification.ThreadId, group);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
     }
@@ -263,8 +237,6 @@ public class ClientTests
     [Fact]
     public async Task TestAllowContentModification()
     {
-        var token = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
-
         var alertContent = new Alert()
         {
             Title = "Test Content Modification",
@@ -279,7 +251,7 @@ public class ClientTests
 
         Assert.Equal(notification.MutableContent, 1);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: token);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
     }
