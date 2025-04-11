@@ -1,9 +1,12 @@
+using System.Text.Json.Serialization;
+
 namespace Apns.Entities;
 
 public record ApnsError(int StatusCode, string Key, string Reason)
 {
     // No error, response OK
     public static readonly ApnsError None = new ApnsError(0, string.Empty, string.Empty);
+    public static readonly ApnsError Unknown = new(1, "Unknown", "The Apns server returns an error code not available in our code base.");
     // Error definitions
     public static readonly ApnsError BadCollapseId = new(400, "BadCollapseId", "The collapse identifier exceeds the maximum allowed size.");
     public static readonly ApnsError BadDeviceToken = new(400, "BadDeviceToken", "The specified device token is invalid. Verify that the request contains a valid token and that the token matches the environment.");
@@ -36,4 +39,61 @@ public record ApnsError(int StatusCode, string Key, string Reason)
     public static readonly ApnsError InternalServerError = new(500, "InternalServerError", "An internal server error occurred.");
     public static readonly ApnsError ServiceUnavailable = new(503, "ServiceUnavailable", "The service is unavailable.");
     public static readonly ApnsError Shutdown = new(503, "Shutdown", "The APNs server is shutting down.");
+
+    public static ApnsError FromContent(ApnsErrorContent content)
+    {
+        ApnsError[] errors =
+        [
+            ApnsError.BadCollapseId,
+            ApnsError.BadDeviceToken,
+            ApnsError.BadExpirationDate,
+            ApnsError.BadMessageId,
+            ApnsError.BadPriority,
+            ApnsError.BadTopic,
+            ApnsError.DeviceTokenNotForTopic,
+            ApnsError.DuplicateHeaders,
+            ApnsError.IdleTimeout,
+            ApnsError.InvalidPushType,
+            ApnsError.MissingDeviceToken,
+            ApnsError.MissingTopic,
+            ApnsError.PayloadEmpty,
+            ApnsError.TopicDisallowed,
+            ApnsError.BadCertificate,
+            ApnsError.BadCertificateEnvironment,
+            ApnsError.ExpiredProviderToken,
+            ApnsError.Forbidden,
+            ApnsError.InvalidProviderToken,
+            ApnsError.MissingProviderToken,
+            ApnsError.UnrelatedKeyIdInToken,
+            ApnsError.BadPath,
+            ApnsError.MethodNotAllowed,
+            ApnsError.ExpiredToken,
+            ApnsError.Unregistered,
+            ApnsError.PayloadTooLarge,
+            ApnsError.TooManyProviderTokenUpdates,
+            ApnsError.TooManyRequests,
+            ApnsError.InternalServerError,
+            ApnsError.ServiceUnavailable,
+            ApnsError.Shutdown
+        ];
+
+        try
+        {
+            ApnsError currentError = errors.Where(error => error.Reason == content.Reason)
+                .SingleOrDefault<ApnsError>();
+        
+            return currentError;
+        }
+        catch
+        {
+            return ApnsError.Unknown;
+        }
+        
+    }
+}
+
+public struct ApnsErrorContent
+{
+    [JsonPropertyName("reason")]
+    public string Reason { get; init; }
 }

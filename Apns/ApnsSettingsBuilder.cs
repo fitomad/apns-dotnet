@@ -12,6 +12,15 @@ public class EnvironmentNotSetException : Exception
     }
 }
 
+public class TopicNotSetException : Exception
+{
+    private const string TopicMessage = "Topic not set and it's mandatory to set the `apns-topic` header";
+    
+    public TopicNotSetException() : base(message: TopicMessage)
+    {
+    }
+}
+
 public class AuthorizationNotSetException : Exception
 {
     private const string AuthorizationNotSetMessage = "Environment not set";
@@ -46,7 +55,7 @@ public record ApnsJsonToken
 
 public record ApnsCertificate
 {
-    public X509Certificate2 X509 { get; init; }
+    public X509Certificate2 X509 { get; }
 
     public ApnsCertificate(X509Certificate2 x509)
     {
@@ -57,6 +66,12 @@ public record ApnsCertificate
     {
         X509 = X509CertificateLoader.LoadCertificateFromFile(pathToCertificate);
     }
+    
+    public ApnsCertificate(string pathToCertificate, string password)
+    {
+        X509 = new X509Certificate2(pathToCertificate, password);
+
+    }
 }
 
 public interface IApnsSettingsBuilder
@@ -65,12 +80,16 @@ public interface IApnsSettingsBuilder
     IApnsSettingsBuilder InEnvironment(ApnsEnvironment environment);
     // JWT
     IApnsSettingsBuilder WithJsonToken(ApnsJsonToken jsonToken);
+    IApnsSettingsBuilder SetTopic(string topic);
     // X509 Certificate
     IApnsSettingsBuilder WithCertificate(ApnsCertificate certificate);
     IApnsSettingsBuilder WithX509Certificate2(X509Certificate2 certificate);
-    IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCrtificate);
+    IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate);
+    IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate, string password);
     // Create new settings
     ApnsSettings Build();
+    //
+    IApnsSettingsBuilder Reset();
 }
 
 public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
@@ -85,6 +104,12 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
     public IApnsSettingsBuilder InEnvironment(ApnsEnvironment environment)
     {
         _settings.Host = environment.GetApnsServer();
+        return this;
+    }
+
+    public IApnsSettingsBuilder SetTopic(string topic)
+    {
+        _settings.Topic = topic;
         return this;
     }
     
@@ -108,9 +133,17 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
         return this;
     }
 
-    public IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCrtificate)
+    public IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate)
     {
-        var apnsCertificate = new ApnsCertificate(pathToCrtificate);
+        var apnsCertificate = new ApnsCertificate(pathToCertificate);
+        _settings.Certificate = apnsCertificate;
+        
+        return this;
+    }
+    
+    public IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate, string password)
+    {
+        var apnsCertificate = new ApnsCertificate(pathToCertificate, password);
         _settings.Certificate = apnsCertificate;
         
         return this;
@@ -122,6 +155,11 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
         {
             // Environment is mandatory
             throw new EnvironmentNotSetException();
+        }
+
+        if(string.IsNullOrEmpty(_settings.Topic))
+        {
+            throw new TopicNotSetException();
         }
         
         if(_settings.IsTokenAuthorizationBased && _settings.IsCertificateAuthorizationBased)
@@ -137,5 +175,11 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
         }
         
         return _settings;
+    }
+
+    public IApnsSettingsBuilder Reset()
+    {
+        _settings = new ApnsSettings();
+        return this;
     }
 }

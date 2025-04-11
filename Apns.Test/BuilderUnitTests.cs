@@ -11,6 +11,7 @@ public class BuilderUnitTests
         Assert.Throws<EnvironmentNotSetException>(() =>
         {
             var settings = new ApnsSettingsBuilder()
+                .SetTopic("fake-topic")
                 .Build();
         });
     }
@@ -24,6 +25,7 @@ public class BuilderUnitTests
         {
             var settings = new ApnsSettingsBuilder()
                 .InEnvironment(environment)
+                .SetTopic("fake-topic")
                 .Build();
         });
     }
@@ -39,10 +41,24 @@ public class BuilderUnitTests
             
             var settings = new ApnsSettingsBuilder()
                 .InEnvironment(environment)
+                .SetTopic("fake-topic")
                 .WithJsonToken(token)
-                .WithPathToX509Certificate2("/fake/path/to/certificate")
+                .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.cer")
                 .Build();
         });
-        
+    }
+    
+    [Theory]
+    [InlineData(ApnsEnvironment.Development)]
+    [InlineData(ApnsEnvironment.Production)]
+    public void TestNoTopic(ApnsEnvironment environment)
+    {
+        Assert.Throws<TopicNotSetException>(() =>
+        {
+            var settings = new ApnsSettingsBuilder()
+                .InEnvironment(environment)
+                .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.cer")
+                .Build();
+        });
     }
 }
