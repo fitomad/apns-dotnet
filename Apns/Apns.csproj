@@ -11,4 +11,7 @@
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
   </ItemGroup>
 
+  <ItemGroup>
+    <InternalsVisibleTo Include="Apns.Test"/>
+  </ItemGroup>
 </Project>

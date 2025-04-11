@@ -1,4 +1,5 @@
 using Apns.Entities.Notification;
+using Apns.Validation;
 
 namespace Apns;
 
@@ -16,15 +17,6 @@ public class NotificationBuilderNullReferenceException : Exception
     private const string NotificationBuilderNullReferenceMessage = "The notification builder is null reference so we cant access from the Live Activity notification builder.";
     
     public NotificationBuilderNullReferenceException() : base(message: NotificationBuilderNullReferenceMessage)
-    {
-    }
-}
-
-public class SoundConflictException : Exception
-{
-    private const string SoundMessage = "You can only set a sound name or sound settings, but not both in the same notification";
-    
-    public SoundConflictException() : base(message: SoundMessage)
     {
     }
 }
@@ -103,13 +95,13 @@ public sealed class NotificationBuilder: INotificationBuilder
     
     public INotificationBuilder PlaySound(string value)
     {
-        _notification.SoundName = value;
+        _notification.Sound = value;
         return this;
     }
 
     public INotificationBuilder PlaySound(string name, bool isCritical, Volume volume)
     {
-        var soundSettings = new SoundSettings()
+        var soundSettings = new SoundSettings
         {
             Name = name,
             Critial = isCritical ? 1 : 0,
@@ -187,27 +179,22 @@ public sealed class NotificationBuilder: INotificationBuilder
 
     public Notification Build()
     {
-        if(_notification.ContentAvailable == 1)
-        {
-            if(_notification.Alert != null || _notification.Badge != null || _notification.Sound != null)
-            {
-                throw new SilentNotificationConflictException();
-            }
-        }
+        new Rule()
+            .When(() => _notification.ContentAvailable == 1)
+            .Check(() => _notification.Alert == null)
+            .Check(() => _notification.Badge == null)
+            .Check(() => _notification.Sound == null)
+            .OnFailure(() => throw new SilentNotificationConflictException())
+            .Validate();
 
-        if(_notification.SoundName != null && _notification.Sound != null)
-        {
-            throw new SoundConflictException();
-        }
-        
         return _notification;
     }
 }
 
 public sealed class LiveActivityNotificationBuilder: ILiveActivityNotificationBuilder
 {
-    private Notification _notification;
-    private WeakReference<INotificationBuilder> _notificationBuilder;
+    private readonly Notification _notification;
+    private readonly WeakReference<INotificationBuilder> _notificationBuilder;
 
     public LiveActivityNotificationBuilder(Notification notification, INotificationBuilder notificationBuilder)
     {

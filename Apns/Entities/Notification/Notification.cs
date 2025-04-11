@@ -13,10 +13,14 @@ public record Notification
     public AlertBase Alert { get; internal set; }
     [JsonPropertyName("badge")]
     public int? Badge { get; internal set; }
+    /*
     [JsonPropertyName("sound")]
     public string SoundName { get; internal set; }
     [JsonPropertyName("sound")]
     public SoundSettings Sound { get; internal set; }
+    */
+    [JsonPropertyName("sound")]
+    public object Sound { get; internal set; }
     [JsonPropertyName("thread-id")]
     public string ThreadId { get; internal set; }
     [JsonPropertyName("category")]

@@ -9,7 +9,7 @@ public class NotificationBuilderTests
     {
         Assert.Throws<SilentNotificationConflictException>(() =>
         {
-            var simpleAlert = new Alert()
+            var simpleAlert = new Alert
             {
                 Title = "Title",
                 Body = "Body"
@@ -39,7 +39,7 @@ public class NotificationBuilderTests
     {
         Assert.Throws<SilentNotificationConflictException>(() =>
         {
-            var sampleSound = new SoundSettings()
+            var sampleSound = new SoundSettings
             {
                 Critial = 1,
                 Name = "custom-sound",
@@ -70,7 +70,7 @@ public class NotificationBuilderTests
             .PlayDefaultSound()
             .Build();
     
-        Assert.Equal("default", notification.SoundName);
+        Assert.Equal("default", notification.Sound);
     }
     
     [Theory]
@@ -84,19 +84,19 @@ public class NotificationBuilderTests
             .PlaySound(sound)
             .Build();
     
-        Assert.Equal(sound, notification.SoundName);
+        Assert.Equal(sound, notification.Sound);
         
     }
     
     [Fact]
-    public void TestSoundConflict()
+    public void TestSoundSetting()
     {
-        Assert.Throws<SoundConflictException>(() =>
-        {
-            Notification notification = new NotificationBuilder()
-                .PlayDefaultSound()
-                .PlaySound(name: "shoot in the dark", isCritical: true, volume: Volume.High)
-                .Build();
-        });
+        Notification notification = new NotificationBuilder()
+            .PlaySound(name: "sound", isCritical: true, volume: Volume.Full)
+            .Build();
+
+        Assert.IsType<SoundSettings>(notification.Sound);
+        Assert.Equal("sound", (notification.Sound as SoundSettings).Name);
+        
     }
 }

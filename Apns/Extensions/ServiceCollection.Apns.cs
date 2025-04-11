@@ -7,9 +7,9 @@ namespace Apns.Extensions;
 
 public static class ServiceCollectionApns
 {
-    private static readonly string ApnsAuthorizationHeader = "Bearer";
-    private static readonly string ApnsBaseUrl = "3/device";
-    private static readonly string ApnsTopicHeader = "apns-topic";
+    private const string ApnsAuthorizationHeader = "Bearer";
+    private const string ApnsBaseUrl = "3/device";
+    private const string ApnsTopicHeader = "apns-topic";
     
     public static void AddApns(this IServiceCollection services, ApnsSettings settings)
     {
