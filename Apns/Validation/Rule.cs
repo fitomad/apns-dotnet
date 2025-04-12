@@ -36,7 +36,7 @@ internal sealed class Rule: IRule
         return this;
     }
     
-    public IProperty<TValue> Property<TValue>(TValue value) where TValue : IEquatable<TValue>, IComparable<TValue>
+    public IProperty<TValue> Property<TValue>(TValue value) where TValue : IEquatable<TValue>,IComparable<TValue>
     {
         var property = new Property<TValue>(value, this);
         return property;

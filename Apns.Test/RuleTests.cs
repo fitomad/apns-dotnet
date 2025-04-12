@@ -487,4 +487,52 @@ public class RuleTests
         
         Assert.True(validationResult);
     }
+
+    [Fact]
+    public void TestEnumerationEqual()
+    {
+        var status = MockStatus.On;
+        
+        var validationResult = new Rule()
+            .Property(status).IsEqualsTo(MockStatus.On)
+            .Validate();
+        
+        Assert.True(validationResult);
+    }
+    
+    [Fact]
+    public void TestEnumerationNonEqual()
+    {
+        var status = MockStatus.On;
+        
+        var validationResult = new Rule()
+            .Property(status).IsEqualsTo(MockStatus.Off)
+            .Validate();
+        
+        Assert.False(validationResult);
+    }
+
+    [Fact]
+    public void TestEnumerationInRange()
+    {
+        var status = MockStatus.StandBy;
+
+        var validationResult = new Rule()
+            .Property(status).InRange(lowerBound: MockStatus.Off, upperBound: MockStatus.On)
+            .Validate();
+        
+        Assert.True(validationResult);
+    }
+    
+    [Fact]
+    public void TestEnumerationOutsideRange()
+    {
+        var status = MockStatus.On;
+
+        var validationResult = new Rule()
+            .Property(status).InRange(lowerBound: MockStatus.Off, upperBound: MockStatus.StandBy)
+            .Validate();
+        
+        Assert.False(validationResult);
+    }
 }
