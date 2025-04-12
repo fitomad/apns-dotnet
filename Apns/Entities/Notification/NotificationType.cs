@@ -1,86 +1,88 @@
 namespace Apns.Entities.Notification;
 
-public enum NotificationType
+public sealed class NotificationType : ApnsEnumeration, IApnsRepresentable, IEquatable<NotificationType>, IComparable<NotificationType>
 {
-    Alert,
-    Background,
-    Controls,
-    Location,
-    VoIp,
-    Complication,
-    FileProvider,
-    Mdm,
-    LiveActivity,
-    PushToTalk
-}
-
-public static class NotificationTypeExtensions
-{
-    public static string GetApnsValue(this NotificationType notificationType)
+    public static readonly NotificationType Alert = new(1, "alert");
+    public static readonly NotificationType Background = new(2, "background");
+    public static readonly NotificationType Controls = new(3, "controls");
+    public static readonly NotificationType Location = new(4, "location");
+    public static readonly NotificationType VoIp = new(5, "voip");
+    public static readonly NotificationType Complication = new(6, "complication");
+    public static readonly NotificationType FileProvider = new(7, "fileprovider");
+    public static readonly NotificationType Mdm = new(8, "mdm");
+    public static readonly NotificationType LiveActivity = new(9, "liveactivity");
+    public static readonly NotificationType PushToTalk = new(10, "pushtotalk");
+    
+    public NotificationType(int key, string value) : base(key, value)
     {
-        var value = notificationType switch
-        {
-            NotificationType.Alert => "alert",
-            NotificationType.Background => "background",
-            NotificationType.Controls => "controls",
-            NotificationType.Location => "location",
-            NotificationType.VoIp => "voip",
-            NotificationType.Complication => "complication",
-            NotificationType.FileProvider => "fileprovider",
-            NotificationType.Mdm => "mdm",
-            NotificationType.LiveActivity => "liveactivity",
-            NotificationType.PushToTalk => "pushtotalk",
-            _ => throw new ArgumentOutOfRangeException(nameof(notificationType), notificationType, null)
-        };
+    }
 
-        return value;
+    public bool Equals(NotificationType other)
+    {
+        return Key == other.Key;
+    }
+
+    public int CompareTo(NotificationType other)
+    {
+        return Key.CompareTo(other.Key);
+    }
+
+    public string GetApnsString()
+    {
+        return Value;
     }
 }
 
-public enum LiveActivityEvent
-{
-    Start,
-    Update,
-    End
-}
 
-public static class LiveActivityEventExtensions
+public sealed class LiveActivityEvent : ApnsEnumeration, IApnsRepresentable,IEquatable<LiveActivityEvent>, IComparable<LiveActivityEvent>
 {
-    public static string GetApnsValue(this LiveActivityEvent liveActivityEvent)
+    public static readonly LiveActivityEvent Start = new(1, "start");
+    public static readonly LiveActivityEvent Update = new(2, "update");
+    public static readonly LiveActivityEvent End = new(3, "end");
+
+    public LiveActivityEvent(int key, string value) : base(key, value)
     {
-        var value = liveActivityEvent switch
-        {
-            LiveActivityEvent.Start => "start",
-            LiveActivityEvent.Update => "update",
-            LiveActivityEvent.End => "end",
-            _ => throw new ArgumentOutOfRangeException(nameof(liveActivityEvent), liveActivityEvent, null)
-        };
+    }
 
-        return value;
+    public bool Equals(LiveActivityEvent other)
+    {
+        return Key == other.Key;
+    }
+
+    public int CompareTo(LiveActivityEvent other)
+    {
+        return Key.CompareTo(other.Key);
+    }
+
+    public string GetApnsString()
+    {
+        return Value;
     }
 }
 
-public enum InterruptionLevel
+public sealed class InterruptionLevel : ApnsEnumeration, IApnsRepresentable,IEquatable<InterruptionLevel>, IComparable<InterruptionLevel>
 {
-    Passive,
-    Active,
-    TimeSensitive,
-    Critical
-}
+    public static readonly InterruptionLevel Passive = new(1, "passive");
+    public static readonly InterruptionLevel Active = new(2, "active");
+    public static readonly InterruptionLevel TimeSensitive = new(3, "time-sensitive");
+    public static readonly InterruptionLevel Critical = new(4, "critical");
 
-public static class InterruptionLevelExtensions
-{
-    public static string GetApnsValue(this InterruptionLevel interruptionLevel)
+    public InterruptionLevel(int key, string value) : base(key, value)
     {
-        var value = interruptionLevel switch
-        {
-            InterruptionLevel.Passive => "passive",
-            InterruptionLevel.Active => "active",
-            InterruptionLevel.TimeSensitive => "time-sensitive",
-            InterruptionLevel.Critical => "critical",
-            _ => throw new ArgumentOutOfRangeException(nameof(interruptionLevel), interruptionLevel, null)
-        };
+    }
+    
+    public bool Equals(InterruptionLevel other)
+    {
+        return Key == other.Key;
+    }
 
-        return value;
+    public int CompareTo(InterruptionLevel other)
+    {
+        return Key.CompareTo(other.Key);
+    }
+
+    public string GetApnsString()
+    {
+        return Value;
     }
 }
