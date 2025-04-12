@@ -149,7 +149,7 @@ public sealed class NotificationBuilder: INotificationBuilder
 
     public INotificationBuilder SetInterruptionLevel(InterruptionLevel level)
     {
-        _notification.InterruptionLevel = level.GetApnsValue();
+        _notification.InterruptionLevel = level.GetApnsString();
         return this;
     }
 
@@ -222,7 +222,7 @@ public sealed class LiveActivityNotificationBuilder: ILiveActivityNotificationBu
 
     public ILiveActivityNotificationBuilder SetLiveActivityEvent(LiveActivityEvent value)
     {
-        _notification.Event = value.GetApnsValue();
+        _notification.Event = value.GetApnsString();
         return this;
     }
 

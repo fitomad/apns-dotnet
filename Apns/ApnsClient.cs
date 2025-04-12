@@ -68,29 +68,29 @@ public class ApnsClient: IApnsClient
 
     private void AddHttpHeaders(NotificationSettings settings)
     {
-        if(settings.PushType != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsPushTypeHeader, settings.PushType.GetApnsValue());
-        }
+        new Rule()
+            .Property(settings.PushType).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPushTypeHeader, settings.PushType.GetApnsString()))
+            .Validate();
 
-        if(!string.IsNullOrEmpty(settings.NotificationId))
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsIdHeader, settings.NotificationId);
-        }
+        new Rule()
+            .Check(() => !string.IsNullOrEmpty(settings.NotificationId))
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsIdHeader, settings.NotificationId))
+            .Validate();
 
-        if(settings.ExpirationTime != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString());
-        }
-        
-        if(settings.Priority != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsPriorityHeader, settings.Priority.GetApnsValue());
-        }
-        
-        if(!string.IsNullOrEmpty(settings.CollapseId))
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsCollapseIdHeader, settings.Priority.GetApnsValue());
-        }
+        new Rule()
+            .Property(settings.ExpirationTime).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString()))
+            .Validate();
+
+        new Rule()
+            .Property(settings.Priority).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPriorityHeader, settings.Priority.GetApnsString()))
+            .Validate();
+
+        new Rule()
+            .Check(() => !string.IsNullOrEmpty(settings.CollapseId))
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsCollapseIdHeader, settings.CollapseId))
+            .Validate();
     }
 }
