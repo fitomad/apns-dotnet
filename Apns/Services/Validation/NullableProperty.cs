@@ -1,4 +1,6 @@
-namespace Apns.Validation;
+using System.Text.RegularExpressions;
+
+namespace Fitomad.Apns.Services.Validation;
 
 internal sealed class NullableProperty<TValue> : IProperty<TValue> where TValue : struct, IEquatable<TValue>, IComparable<TValue>
 {
@@ -13,7 +15,7 @@ internal sealed class NullableProperty<TValue> : IProperty<TValue> where TValue 
 
     public IRule IsEqualsTo(TValue value)
     {
-        _rule.Check(() => _value.Equals(value));
+        _rule.VerifyThat(() => _value.Equals(value));
         return _rule;
     }
 
@@ -21,12 +23,12 @@ internal sealed class NullableProperty<TValue> : IProperty<TValue> where TValue 
     {
         if(_value is not null)
         {
-            _rule.Check(() => lowerBound.CompareTo(_value.Value) < 0);
-            _rule.Check(() => upperBound.CompareTo(_value.Value) > 0);
+            _rule.VerifyThat(() => lowerBound.CompareTo(_value.Value) < 0);
+            _rule.VerifyThat(() => upperBound.CompareTo(_value.Value) > 0);
         }
         else
         {
-            _rule.Check(() => false);
+            _rule.VerifyThat(() => false);
         }
 
         return _rule;
@@ -34,13 +36,20 @@ internal sealed class NullableProperty<TValue> : IProperty<TValue> where TValue 
 
     public IRule IsNull()
     {
-        _rule.Check(() => _value == null);
+        _rule.VerifyThat(() => _value == null);
         return _rule;
     }
 
     public IRule IsNotNull()
     {
-        _rule.Check(() => _value != null);
+        _rule.VerifyThat(() => _value != null);
+        return _rule;
+    }
+    
+    public IRule MatchRegularExpression(string expression)
+    {
+        _rule.VerifyThat(() => Regex.IsMatch(_value.ToString(), expression));
+        
         return _rule;
     }
 }

@@ -1,33 +1,27 @@
-namespace Apns.Entities.Notification;
+namespace Fitomad.Apns.Entities.Notification;
 
-public enum Priority
+public sealed class Priority : ApnsEnumeration, IApnsRepresentable, IEquatable<Priority>, IComparable<Priority>
 {
-    /// <summary>
-    /// Send the notification immediately. Default value
-    /// </summary>
-    High,
-    /// <summary>
-    /// Send the notification based on power considerations on the user’s device
-    /// </summary>
-    Medium,
-    /// <summary>
-    /// Prioritize the device’s power considerations over all other factors for delivery, and prevent awakening the device
-    /// </summary>
-    Low
-}
-
-public static class PriorityExtensions
-{
-    public static string GetApnsValue(this Priority priority)
+    public static readonly Priority High = new(10, "high");
+    public static readonly Priority Medium = new(5, "medium");
+    public static readonly Priority Low = new(1, "low");
+    
+    public Priority(int key, string value): base(key, value)
     {
-        var value = priority switch
-        {
-            Priority.High => "10",
-            Priority.Medium => "5",
-            Priority.Low => "1",
-            _ => throw new ArgumentOutOfRangeException(nameof(priority), priority, null)
-        };
+    }
+    
+    public bool Equals(Priority other)
+    {
+        return Key == other.Key;
+    }
 
-        return value;
+    public int CompareTo(Priority other)
+    {
+        return Key.CompareTo(other.Key);
+    }
+
+    public string GetApnsString()
+    {
+        return $"{Key}";
     }
 }

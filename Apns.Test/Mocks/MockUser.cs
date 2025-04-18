@@ -1,4 +1,4 @@
-namespace Apns.Test.Mocks;
+namespace Fitomad.Apns.Test.Mocks;
 
 public class MockUser
 {

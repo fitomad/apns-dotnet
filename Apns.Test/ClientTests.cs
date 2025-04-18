@@ -1,22 +1,40 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Apns.Entities;
-using Apns.Entities.Notification;
-using Apns.Extensions;
+using Fitomad.Apns.Extensions;
+using Fitomad.Apns.Entities;
+using Fitomad.Apns.Entities.Notification;
 
-namespace Apns.Test;
+namespace Fitomad.Apns.Test;
 
 public class ClientTests
 {
     private readonly IApnsClient _client;
-
-    private const string DeviceToken = "809d883e809438d27c53c17089eccde5cec69447c72ceea5234dcc23bb9340fff356969cf17b5e56b54336ce1ee9ef2488eefea96a97eb7050322fd748ceca72a24dc8ff83cb63ae3b8bfb1dea35b1e8";
+    private readonly string _deviceToken;
     
+    public static IEnumerable<object[]> InterruptionLevels
+    {
+        get
+        {
+            yield return new object[] { InterruptionLevel.Passive };
+            yield return new object[] { InterruptionLevel.Active };
+            yield return new object[] { InterruptionLevel.Critical };
+            yield return new object[] { InterruptionLevel.TimeSensitive };
+        }
+    }
     public ClientTests()
     {
+        var userSecretsConfiguration = new ConfigurationBuilder()
+            .AddUserSecrets<ClientTests>()
+            .Build();
+
+        string certPath = userSecretsConfiguration.GetValue<string>("Apns:CertPath");
+        string certPassword = userSecretsConfiguration.GetValue<string>("Apns:CertPassword");
+
+        
         var testSettings = new ApnsSettingsBuilder()
             .InEnvironment(ApnsEnvironment.Development)
             .SetTopic("com.desappstre.Smarty")
-            .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.p12", "12345678")
+            .WithPathToX509Certificate2(certPath, certPassword)
             .Build();
 
         var services = new ServiceCollection();
@@ -24,6 +42,7 @@ public class ClientTests
         var provider = services.BuildServiceProvider();
         
         _client = provider.GetRequiredService<IApnsClient>();
+        _deviceToken = userSecretsConfiguration.GetValue<string>("Apns:DeviceToken");
     }
 
     [Fact]
@@ -40,9 +59,12 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-       ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+       ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
        
-        Assert.True(apnsResponse.IsSuccess);   
+        Assert.True(apnsResponse.IsSuccess);
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -59,9 +81,12 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -81,9 +106,12 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
-        Assert.True(apnsResponse.IsSuccess);   
+        Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -101,9 +129,12 @@ public class ClientTests
             .WithBadgeCount(1)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
-        Assert.True(apnsResponse.IsSuccess);   
+        Assert.True(apnsResponse.IsSuccess);
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -121,9 +152,12 @@ public class ClientTests
             .WithBadgeCount(0)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -141,26 +175,26 @@ public class ClientTests
             .ClearBadgeCount()
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
-        Assert.True(apnsResponse.IsSuccess);   
+        Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
 
     [Theory]
-    [InlineData(InterruptionLevel.Passive, "passive")]
-    [InlineData(InterruptionLevel.Active, "active")]
-    [InlineData(InterruptionLevel.TimeSensitive, "time-sensitive")]
-    [InlineData(InterruptionLevel.Critical, "critical")]
-    public async Task TestInterruptionLevel(InterruptionLevel level, string expectedLevel)
+    [MemberData(nameof(InterruptionLevels))]
+    public async Task TestInterruptionLevel(InterruptionLevel level)
     {
         var alertContent = new LocalizableAlert()
         {
             TitleLocalizationKey = "push_title_arg",
-            TitleLocalizationArguments = [ expectedLevel ],
+            TitleLocalizationArguments = [ level.Value ],
             SubtitleLocalizationKey = "push_subtitle_arg",
-            SubtitleLocalizationArguments = [ expectedLevel ],
+            SubtitleLocalizationArguments = [ level.Value ],
             BodyLocalizationKey = "push_body_arg",
-            BodyLocalizationArguments = [ expectedLevel ]
+            BodyLocalizationArguments = [ level.Value ]
         };
 
         Notification notification = new NotificationBuilder()
@@ -168,11 +202,14 @@ public class ClientTests
             .SetInterruptionLevel(level)
             .Build();
 
-        Assert.Equal(notification.InterruptionLevel, expectedLevel);
+        Assert.Equal(notification.InterruptionLevel, level.Value);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Theory]
@@ -201,9 +238,12 @@ public class ClientTests
 
         Assert.Equal(notification.RelevanceScore, relevance);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Theory]
@@ -229,9 +269,12 @@ public class ClientTests
 
         Assert.Equal(notification.ThreadId, group);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
     
     [Fact]
@@ -251,8 +294,11 @@ public class ClientTests
 
         Assert.Equal(notification.MutableContent, 1);
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: DeviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
+        Assert.NotNull(apnsResponse.Guid);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsId);
+        Assert.NotEmpty(apnsResponse.Guid.ApnsUniqueId);
     }
 }

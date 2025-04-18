@@ -1,6 +1,7 @@
-using Apns.Entities.Notification;
+using Fitomad.Apns.Entities.Notification;
+using Fitomad.Apns.Exceptions;
 
-namespace Apns.Test;
+namespace Fitomad.Apns.Test;
 
 public class NotificationBuilderTests
 {
@@ -43,7 +44,7 @@ public class NotificationBuilderTests
             {
                 Critial = 1,
                 Name = "custom-sound",
-                Volume = Volume.High.GetApnsValue()
+                Volume = Volume.High.Decibels
             };
             
             new NotificationBuilder()

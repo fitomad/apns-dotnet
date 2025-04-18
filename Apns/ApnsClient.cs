@@ -3,17 +3,12 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Apns.Entities;
-using Apns.Entities.Notification;
-using Apns.Validation;
+using Fitomad.Apns.Entities;
+using Fitomad.Apns.Entities.Notification;
+using Fitomad.Apns.Exceptions;
+using Fitomad.Apns.Services.Validation;
 
-namespace Apns;
-
-public interface IApnsClient
-{
-   Task<ApnsResponse> SendAsync(Notification notification, NotificationSettings notificationSettings, string deviceToken); 
-   Task<ApnsResponse> SendAsync(Notification notification, string deviceToken);
-}
+namespace Fitomad.Apns;
 
 public class ApnsClient: IApnsClient
 {
@@ -22,9 +17,11 @@ public class ApnsClient: IApnsClient
 
     private const string ApnsPushTypeHeader = "apns-push-type";
     private const string ApnsIdHeader = "apns-id";
+    private const string ApnsUniqueIdHeader = "apns-unique-id";
     private const string ApnsExpirationHeader = "apns-expiration";
     private const string ApnsPriorityHeader = "apns-priority";
     private const string ApnsCollapseIdHeader = "apns-collapse-id";
+    private const string ApnsTopicHeader = "apns-topic";
     
     public ApnsClient(HttpClient httpClient)
     {
@@ -58,7 +55,11 @@ public class ApnsClient: IApnsClient
             return ApnsResponse.Failure(error);
         }
         
-        return ApnsResponse.Success();
+        string id = response.Headers.GetValues(ApnsIdHeader).First();
+        string uniqueId = response.Headers.GetValues(ApnsUniqueIdHeader).First();
+        var apnsGuid = new ApnsGuid(id, uniqueId);
+        
+        return ApnsResponse.Success(apnsGuid);
     }
 
     public async Task<ApnsResponse> SendAsync(Notification notification, string deviceToken)
@@ -68,29 +69,55 @@ public class ApnsClient: IApnsClient
 
     private void AddHttpHeaders(NotificationSettings settings)
     {
-        if(settings.PushType != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsPushTypeHeader, settings.PushType.GetApnsValue());
-        }
+        new Rule()
+            .Property(settings.PushType).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPushTypeHeader, settings.PushType.GetApnsString()))
+            .Validate();
 
-        if(!string.IsNullOrEmpty(settings.NotificationId))
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsIdHeader, settings.NotificationId);
-        }
+        new Rule()
+            .Property(settings.PushType).IsNotNull()
+            .Property(settings.PushType).IsEqualsTo(NotificationType.LiveActivity)
+            .OnSuccess(() =>
+            {
+                var baseTopicHeader = _httpClient.DefaultRequestHeaders.GetValues(ApnsTopicHeader).First<string>();
+                var liveActivityTopicHeader = $"{baseTopicHeader}.push-type.liveactivity";
+                    
+                _httpClient.DefaultRequestHeaders.Add(ApnsTopicHeader, liveActivityTopicHeader);
+            })
+            .Validate();
+        
+        new Rule()
+            .Property(settings.PushType).IsNotNull()
+            .Property(settings.PushType).IsEqualsTo(NotificationType.VoIp)
+            .OnSuccess(() =>
+            {
+                var baseTopicHeader = _httpClient.DefaultRequestHeaders.GetValues(ApnsTopicHeader).First<string>();
+                var voipTopicHeader = $"{baseTopicHeader}.voip";
+                    
+                _httpClient.DefaultRequestHeaders.Add(ApnsTopicHeader, voipTopicHeader);
+            })
+            .Validate();
 
-        if(settings.ExpirationTime != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString());
-        }
-        
-        if(settings.Priority != null)
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsPriorityHeader, settings.Priority.GetApnsValue());
-        }
-        
-        if(!string.IsNullOrEmpty(settings.CollapseId))
-        {
-            _httpClient.DefaultRequestHeaders.Add(ApnsCollapseIdHeader, settings.Priority.GetApnsValue());
-        }
+        new Rule()
+            .Property(settings.NotificationId).IsNotNull()
+            .Property(settings.NotificationId).MatchRegularExpression(@"^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$")
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsIdHeader, settings.NotificationId))
+            .OnFailure(() => throw new ApnsIdHeaderNonValidException())
+            .Validate();
+
+        new Rule()
+            .Property(settings.ExpirationTime).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString()))
+            .Validate();
+
+        new Rule()
+            .Property(settings.Priority).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPriorityHeader, settings.Priority.GetApnsString()))
+            .Validate();
+
+        new Rule()
+            .Property(settings.CollapseId).IsNotNull()
+            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsCollapseIdHeader, settings.CollapseId))
+            .Validate();
     }
 }

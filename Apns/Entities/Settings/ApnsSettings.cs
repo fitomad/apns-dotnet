@@ -1,6 +1,4 @@
-using System.Security.Cryptography.X509Certificates;
-
-namespace Apns.Entities;
+namespace Fitomad.Apns.Entities.Settings;
 
 public struct ApnsSettings
 {

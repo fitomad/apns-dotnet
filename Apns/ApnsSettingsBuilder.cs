@@ -1,107 +1,16 @@
 ﻿using System.Security.Cryptography.X509Certificates;
-using Apns.Entities;
-using Apns.Validation;
+using System.Text.RegularExpressions;
+using Fitomad.Apns.Entities;
+using Fitomad.Apns.Entities.Settings;
+using Fitomad.Apns.Exceptions;
+using Fitomad.Apns.Services.Validation;
 
-namespace Apns;
-
-public class EnvironmentNotSetException : Exception
-{
-    private const string EnvironmentMessage = "Environment not set";
-    
-    public EnvironmentNotSetException() : base(message: EnvironmentMessage)
-    {
-    }
-}
-
-public class TopicNotSetException : Exception
-{
-    private const string TopicMessage = "Topic not set and it's mandatory to set the `apns-topic` header";
-    
-    public TopicNotSetException() : base(message: TopicMessage)
-    {
-    }
-}
-
-public class AuthorizationNotSetException : Exception
-{
-    private const string AuthorizationNotSetMessage = "Environment not set";
-    
-    public AuthorizationNotSetException() : base(message: AuthorizationNotSetMessage)
-    {
-    }
-}
-
-public class DuplicatedAuthorizationException : Exception
-{
-    private const string DuplicatedAuthorizationMessage = "Environment not set";
-    
-    public DuplicatedAuthorizationException() : base(message: DuplicatedAuthorizationMessage)
-    {
-    }
-}
-
-public record ApnsJsonToken
-{
-    private readonly string _token;
-    
-    public string KeyId { get; internal set; }
-    public string BundleId { get; internal set; }
-    public string TeamId { get; internal set; }
-
-    public ApnsJsonToken(string content)
-    {
-        _token = content;
-    }
-}
-
-public record ApnsCertificate
-{
-    public X509Certificate2 X509 { get; }
-
-    public ApnsCertificate(X509Certificate2 x509)
-    {
-        X509 = x509;
-    }
-
-    public ApnsCertificate(string pathToCertificate)
-    {
-        X509 = X509CertificateLoader.LoadCertificateFromFile(pathToCertificate);
-    }
-    
-    public ApnsCertificate(string pathToCertificate, string password)
-    {
-        X509 = new X509Certificate2(pathToCertificate, password);
-
-    }
-}
-
-public interface IApnsSettingsBuilder
-{
-    // Environments
-    IApnsSettingsBuilder InEnvironment(ApnsEnvironment environment);
-    // JWT
-    IApnsSettingsBuilder WithJsonToken(ApnsJsonToken jsonToken);
-    IApnsSettingsBuilder SetTopic(string topic);
-    // X509 Certificate
-    IApnsSettingsBuilder WithCertificate(ApnsCertificate certificate);
-    IApnsSettingsBuilder WithX509Certificate2(X509Certificate2 certificate);
-    IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate);
-    IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate, string password);
-    // Create new settings
-    ApnsSettings Build();
-    //
-    IApnsSettingsBuilder Reset();
-}
+namespace Fitomad.Apns;
 
 public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
 {
-    private ApnsSettings _settings;
+    private ApnsSettings _settings = new();
 
-    public ApnsSettingsBuilder()
-    {
-        _settings = new ApnsSettings();
-    }
-    
     public IApnsSettingsBuilder InEnvironment(ApnsEnvironment environment)
     {
         _settings.Host = environment.GetApnsServer();
@@ -112,6 +21,24 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
     {
         _settings.Topic = topic;
         return this;
+    }
+
+    public IApnsSettingsBuilder WithPathToJsonToken(string pathToJwt, string keyId, string teamId)
+    {
+        string pattern = @"\-{5}[\w\s]*\-{5}\n(?<key>[\w\s\W]*)\n\-{5}[\w\s]*\-{5}";
+        string keyFileContent = File.ReadAllText(pathToJwt);
+
+        var match = Regex.Match(keyFileContent, pattern);
+        var key = match.Groups["key"].Value;
+
+        var apnsJsonToken = new ApnsJsonToken
+        {
+            KeyId = keyId,
+            TeamId = teamId,
+            Content = key
+        };
+        
+        return WithJsonToken(apnsJsonToken);
     }
     
     public IApnsSettingsBuilder WithJsonToken(ApnsJsonToken jsonToken)
@@ -133,14 +60,6 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
         
         return this;
     }
-
-    public IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate)
-    {
-        var apnsCertificate = new ApnsCertificate(pathToCertificate);
-        _settings.Certificate = apnsCertificate;
-        
-        return this;
-    }
     
     public IApnsSettingsBuilder WithPathToX509Certificate2(string pathToCertificate, string password)
     {
@@ -153,24 +72,24 @@ public sealed class ApnsSettingsBuilder: IApnsSettingsBuilder
     public ApnsSettings Build()
     {
         new Rule()
-            .Check(() => string.IsNullOrEmpty(_settings.Host))
+            .VerifyThat(() => string.IsNullOrEmpty(_settings.Host))
             .OnSuccess(() => throw new EnvironmentNotSetException())
             .Validate();
 
         new Rule()
-            .Check(() => string.IsNullOrEmpty(_settings.Topic))
+            .VerifyThat(() => string.IsNullOrEmpty(_settings.Topic))
             .OnSuccess(() => throw new TopicNotSetException())
             .Validate();
 
         new Rule()
-            .Check(() => _settings.IsCertificateAuthorizationBased)
-            .Check(() => _settings.IsTokenAuthorizationBased)
+            .VerifyThat(() => _settings.IsCertificateAuthorizationBased)
+            .VerifyThat(() => _settings.IsTokenAuthorizationBased)
             .OnSuccess(() => throw new DuplicatedAuthorizationException())
             .Validate();
 
         new Rule()
-            .Check(() => !_settings.IsCertificateAuthorizationBased)
-            .Check(() => !_settings.IsTokenAuthorizationBased)
+            .VerifyThat(() => !_settings.IsCertificateAuthorizationBased)
+            .VerifyThat(() => !_settings.IsTokenAuthorizationBased)
             .OnSuccess(() => throw new AuthorizationNotSetException())
             .Validate();
 
