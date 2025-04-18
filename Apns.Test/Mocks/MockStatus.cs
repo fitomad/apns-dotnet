@@ -1,6 +1,6 @@
-using Apns.Entities;
+using Fitomad.Apns.Entities;
 
-namespace Apns.Test.Mocks;
+namespace Fitomad.Apns.Test.Mocks;
 
 public class MockStatus: ApnsEnumeration, IApnsRepresentable, IEquatable<MockStatus>, IComparable<MockStatus>
 {

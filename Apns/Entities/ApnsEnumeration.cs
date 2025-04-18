@@ -1,4 +1,4 @@
-namespace Apns.Entities;
+namespace Fitomad.Apns.Entities;
 
 internal interface IApnsRepresentable
 {

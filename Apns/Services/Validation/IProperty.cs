@@ -1,4 +1,4 @@
-namespace Apns.Validation;
+namespace Fitomad.Apns.Services.Validation;
 
 internal interface IProperty<TValue> where TValue : IEquatable<TValue>
 {
@@ -6,4 +6,5 @@ internal interface IProperty<TValue> where TValue : IEquatable<TValue>
     IRule InRange(TValue lowerBound, TValue upperBound);
     IRule IsNull();
     IRule IsNotNull();
+    IRule MatchRegularExpression(string expression);
 }

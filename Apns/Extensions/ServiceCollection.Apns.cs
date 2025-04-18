@@ -1,9 +1,10 @@
 using System.Net;
 using System.Net.Http.Headers;
 using Microsoft.Extensions.DependencyInjection;
-using Apns.Entities;
+using Fitomad.Apns.Entities.Settings;
+using Fitomad.Apns.Services.BearerToken;
 
-namespace Apns.Extensions;
+namespace Fitomad.Apns.Extensions;
 
 public static class ServiceCollectionApns
 {
@@ -23,9 +24,11 @@ public static class ServiceCollectionApns
             client.DefaultRequestHeaders.Accept.Add(jsonMediaType);
             client.DefaultRequestHeaders.Add(ApnsTopicHeader, settings.Topic);
 
-            if(settings.IsTokenAuthorizationBased)
+            if(settings is { IsTokenAuthorizationBased: true, JsonToken: ApnsJsonToken jsonToken })
             {
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(ApnsAuthorizationHeader, settings.JsonToken.TeamId);
+                var bearerTokenService = new BearerTokenService();
+                string bearerToken = bearerTokenService.MakeBearerToken(jsonToken);
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(ApnsAuthorizationHeader, bearerToken);
             }
         });
 
@@ -34,12 +37,9 @@ public static class ServiceCollectionApns
             var httpClientHandler = new HttpClientHandler();
             httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
             httpClientHandler.ServerCertificateCustomValidationCallback = (a, b, c, d) => true;
-            httpClientHandler.ClientCertificates.Add(settings.Certificate.X509);
+            httpClientHandler.ClientCertificates.Add(settings.Certificate?.X509);
             
-            httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() =>
-            {
-                return httpClientHandler;
-            });
+            httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => httpClientHandler);
         }
     }
 }

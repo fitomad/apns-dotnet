@@ -1,4 +1,6 @@
-namespace Apns.Validation;
+using System.Text.RegularExpressions;
+
+namespace Fitomad.Apns.Services.Validation;
 
 internal sealed class Property<TValue> : IProperty<TValue> where TValue : IEquatable<TValue>, IComparable<TValue>
 {
@@ -13,27 +15,34 @@ internal sealed class Property<TValue> : IProperty<TValue> where TValue : IEquat
 
     public IRule IsEqualsTo(TValue value)
     {
-        _rule.Check(() => _value.Equals(value));
+        _rule.VerifyThat(() => _value.Equals(value));
         return _rule;
     }
 
     public IRule InRange(TValue lowerBound, TValue upperBound)
     {
-        _rule.Check(() => lowerBound.CompareTo(_value) < 0);
-        _rule.Check(() => upperBound.CompareTo(_value) > 0);
+        _rule.VerifyThat(() => lowerBound.CompareTo(_value) < 0);
+        _rule.VerifyThat(() => upperBound.CompareTo(_value) > 0);
         
         return _rule;
     }
 
     public IRule IsNull()
     {
-        _rule.Check(() => _value == null);
+        _rule.Where(() => _value == null);
         return _rule;
     }
 
     public IRule IsNotNull()
     {
-        _rule.Check(() => _value != null);
+        _rule.Where(() => _value != null);
+        return _rule;
+    }
+
+    public IRule MatchRegularExpression(string expression)
+    {
+        _rule.VerifyThat(() => Regex.IsMatch(_value.ToString(), expression));
+        
         return _rule;
     }
 }

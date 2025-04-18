@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Apns.Entities;
+namespace Fitomad.Apns.Entities;
 
 public record ApnsError(int StatusCode, string Key, string Reason)
 {
@@ -79,7 +79,7 @@ public record ApnsError(int StatusCode, string Key, string Reason)
 
         try
         {
-            ApnsError currentError = errors.Where(error => error.Reason == content.Reason)
+            ApnsError currentError = errors.Where(error => error.Key == content.Reason)
                 .SingleOrDefault<ApnsError>();
         
             return currentError;

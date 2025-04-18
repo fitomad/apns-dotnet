@@ -1,4 +1,4 @@
-namespace Apns.Validation;
+namespace Fitomad.Apns.Services.Validation;
 
 internal sealed class Rule: IRule
 {
@@ -12,13 +12,13 @@ internal sealed class Rule: IRule
         _conditions = new List<Func<bool>>();
     }
     
-    public IRule Check(Func<bool> condition)
+    public IRule VerifyThat(Func<bool> condition)
     {
         _conditions.Add(condition);
         return this;
     }
 
-    public IRule When(Func<bool> condition)
+    public IRule Where(Func<bool> condition)
     {
         _whenCondition = condition;
         return this;

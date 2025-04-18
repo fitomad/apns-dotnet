@@ -4,11 +4,32 @@
     <TargetFramework>net9.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+    <!-- nuget -->
+    <PackageId>Apns</PackageId>
+    <Version>1.0.0</Version>
+    <Authors>Adolfo Vera</Authors>
+    <Company>Fitomad</Company>
+    <Description>Apns by @fitomad is a package that simplifies the process of sending push notifications to Apple devices using the Apple Push Notification Service (APNS). Whether you're managing complex messaging workflows or sending single notifications, this library provides an efficient and user-friendly interface to integrate APNS into your .NET applications. Features include support for token-based authentication, notification payload customization, and seamless connectivity to APNS servers for reliable delivery. Ideal for developers looking to enhance their app's communication capabilities with Apple devices.</Description>
+    <RepositoryUrl>https://github.com/fitomad/apns-dotnet</RepositoryUrl>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageIcon>package-icon.jpg</PackageIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\package-icon.jpg">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.3" />
     <PackageReference Include="Microsoft.Extensions.Http" Version="9.0.3" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="8.8.0" />
   </ItemGroup>
 
   <ItemGroup>

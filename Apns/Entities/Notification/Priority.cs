@@ -1,4 +1,4 @@
-namespace Apns.Entities.Notification;
+namespace Fitomad.Apns.Entities.Notification;
 
 public sealed class Priority : ApnsEnumeration, IApnsRepresentable, IEquatable<Priority>, IComparable<Priority>
 {

@@ -1,6 +1,7 @@
-using Apns.Validation;
-using Apns.Test.Mocks;
-namespace Apns.Test;
+using Fitomad.Apns.Services.Validation;
+using Fitomad.Apns.Test.Mocks;
+
+namespace Fitomad.Apns.Test;
 
 public class RuleTests
 {
@@ -8,7 +9,7 @@ public class RuleTests
     public void TestRuleTrue()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 1);
+            .VerifyThat(() => 1 == 1);
             
         Assert.True(numberRules.Validate());
     }
@@ -17,7 +18,7 @@ public class RuleTests
     public void TestRuleFalse()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 2);
+            .VerifyThat(() => 1 == 2);
             
         Assert.False(numberRules.Validate());
     }
@@ -26,9 +27,9 @@ public class RuleTests
     public void TestRuleCollectionTrue()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 1)
-            .Check(() => 2 == 2)
-            .Check(() => 3 == 3);
+            .VerifyThat(() => 1 == 1)
+            .VerifyThat(() => 2 == 2)
+            .VerifyThat(() => 3 == 3);
             
         Assert.True(numberRules.Validate());
     }
@@ -37,9 +38,9 @@ public class RuleTests
     public void TestRuleCollectionAllFalse()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 2)
-            .Check(() => 2 == 3)
-            .Check(() => 3 == 4);
+            .VerifyThat(() => 1 == 2)
+            .VerifyThat(() => 2 == 3)
+            .VerifyThat(() => 3 == 4);
             
         Assert.False(numberRules.Validate());
     }
@@ -48,9 +49,9 @@ public class RuleTests
     public void TestRuleCollectionOnlyOneFalse()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 1)
-            .Check(() => 2 == 2)
-            .Check(() => 3 == 4);
+            .VerifyThat(() => 1 == 1)
+            .VerifyThat(() => 2 == 2)
+            .VerifyThat(() => 3 == 4);
             
         Assert.False(numberRules.Validate());
     }
@@ -59,8 +60,8 @@ public class RuleTests
     public void TestRuleWithFilterResultOk()
     {
         IRule numberRules = new Rule()
-            .When(() => true)
-            .Check(() => 1 == 1);
+            .Where(() => true)
+            .VerifyThat(() => 1 == 1);
         
         Assert.True(numberRules.Validate());
     }
@@ -69,8 +70,8 @@ public class RuleTests
     public void TestRuleWithFilterResultFailure()
     {
         IRule numberRules = new Rule()
-            .When(() => true)
-            .Check(() => 1 == 2);
+            .Where(() => true)
+            .VerifyThat(() => 1 == 2);
         
         Assert.False(numberRules.Validate());
     }
@@ -79,8 +80,8 @@ public class RuleTests
     public void TestRuleWithFilterNotSatisfied()
     {
         IRule numberRules = new Rule()
-            .When(() => 1 > 2)
-            .Check(() => 1 == 2);
+            .Where(() => 1 > 2)
+            .VerifyThat(() => 1 == 2);
         
         Assert.True(numberRules.Validate());
     }
@@ -91,7 +92,7 @@ public class RuleTests
         Assert.Throws<ArithmeticException>(() =>
         {
             new Rule()
-                .Check(() => 1 == 2)
+                .VerifyThat(() => 1 == 2)
                 .OnFailure(() => throw new ArithmeticException())
                 .Validate();
         });
@@ -103,8 +104,8 @@ public class RuleTests
         Assert.Throws<ArithmeticException>(() =>
         {
             new Rule()
-                .Check(() => 1 == 1)
-                .Check(() => 2 == 3)
+                .VerifyThat(() => 1 == 1)
+                .VerifyThat(() => 2 == 3)
                 .OnFailure(() => throw new ArithmeticException())
                 .Validate();
         });
@@ -114,7 +115,7 @@ public class RuleTests
     public void TestRuleFailureNotThrowExecution()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 1)
+            .VerifyThat(() => 1 == 1)
             .OnFailure(() => throw new ArithmeticException());
         
         Assert.True(numberRules.Validate());
@@ -124,8 +125,8 @@ public class RuleTests
     public void TestRuleNoFailureNotThrowExecution()
     {
         IRule numberRules = new Rule()
-            .Check(() => 1 == 1)
-            .Check(() => 2 == 2)
+            .VerifyThat(() => 1 == 1)
+            .VerifyThat(() => 2 == 2)
             .OnFailure(() => throw new ArithmeticException());
         
         Assert.True(numberRules.Validate());
@@ -135,9 +136,9 @@ public class RuleTests
     public void TestRuleNoFailureNotThrowExecutionWithFilterOn()
     {
         IRule numberRules = new Rule()
-            .When(() => true)
-            .Check(() => 1 == 1)
-            .Check(() => 2 == 2)
+            .Where(() => true)
+            .VerifyThat(() => 1 == 1)
+            .VerifyThat(() => 2 == 2)
             .OnFailure(() => throw new ArithmeticException());
         
         Assert.True(numberRules.Validate());
@@ -149,9 +150,9 @@ public class RuleTests
         Assert.Throws<ArithmeticException>(() =>
         {
             new Rule()
-                .When(() => true)
-                .Check(() => 1 == 1)
-                .Check(() => 2 == 3)
+                .Where(() => true)
+                .VerifyThat(() => 1 == 1)
+                .VerifyThat(() => 2 == 3)
                 .OnFailure(() => throw new ArithmeticException())
                 .Validate();
         });
@@ -360,9 +361,9 @@ public class RuleTests
         };
         
         var validationResult = new Rule()
-            .When(() => 1 == 1)
+            .Where(() => 1 == 1)
             .Property(sampleUser.Name).IsEqualsTo("John Doe")
-            .Check(() => sampleUser.Age == 49)
+            .VerifyThat(() => sampleUser.Age == 49)
             .Property(sampleUser.Height).InRange(lowerBound: 1.70, upperBound: 1.80)
             .OnSuccess(() => Console.WriteLine("Success! 🎉"))
             .Validate();
@@ -383,9 +384,9 @@ public class RuleTests
         Assert.Throws<InvalidOperationException>(() =>
         {
             new Rule()
-                .When(() => 1 == 1)
+                .Where(() => 1 == 1)
                 .Property(sampleUser.Name).IsEqualsTo("Not The Real John Doe")
-                .Check(() => sampleUser.Age == 49)
+                .VerifyThat(() => sampleUser.Age == 49)
                 .Property(sampleUser.Height).InRange(lowerBound: 1.70, upperBound: 1.80)
                 .OnFailure(() => throw new InvalidOperationException())
                 .Validate();
@@ -475,8 +476,8 @@ public class RuleTests
         };
 
         var validationResult = new Rule()
-            .When(() => "Madrid" == "Madrid")
-            .Check(() => "Spain" == "Spain")
+            .Where(() => "Madrid" == "Madrid")
+            .VerifyThat(() => "Spain" == "Spain")
             .Property(mockUser.Name).IsEqualsTo("John Doe")
             .Property(mockUser.Age).InRange(lowerBound: 25, upperBound: 75)
             .Property(mockUser.Height).InRange(lowerBound: 1.70, upperBound: 1.90)

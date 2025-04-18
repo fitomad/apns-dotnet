@@ -1,9 +1,25 @@
-﻿using Apns.Entities;
+﻿using Microsoft.Extensions.Configuration;
+using Fitomad.Apns.Entities;
+using Fitomad.Apns.Entities.Settings;
+using Fitomad.Apns.Exceptions;
 
-namespace Apns.Test;
+namespace Fitomad.Apns.Test;
 
 public class BuilderUnitTests
 {
+    private readonly string _certificatePath;
+    private readonly string _certificatePassword;
+    
+    public BuilderUnitTests()
+    {
+        var userSecretsConfiguration = new ConfigurationBuilder()
+            .AddUserSecrets<BuilderUnitTests>()
+            .Build();
+
+        _certificatePath = userSecretsConfiguration.GetValue<string>("Apns:CertPath");
+        _certificatePassword = userSecretsConfiguration.GetValue<string>("Apns:CertPassword");
+
+    }
     [Fact]
     public void TestNoEnvironmentNoAuthorization()
     {
@@ -36,13 +52,13 @@ public class BuilderUnitTests
     {
         Assert.Throws<DuplicatedAuthorizationException>(() =>
         {
-            var token = new ApnsJsonToken(content: "");
+            var token = new ApnsJsonToken();
             
             new ApnsSettingsBuilder()
                 .InEnvironment(environment)
                 .SetTopic("fake-topic")
                 .WithJsonToken(token)
-                .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.cer")
+                .WithPathToX509Certificate2(_certificatePath, _certificatePassword)
                 .Build();
         });
     }
@@ -56,7 +72,7 @@ public class BuilderUnitTests
         {
             new ApnsSettingsBuilder()
                 .InEnvironment(environment)
-                .WithPathToX509Certificate2("/Users/adolfo/Documents/Proyectos/Packages/ApnsCertificates/apns-smarty.cer")
+                .WithPathToX509Certificate2(_certificatePath, _certificatePassword)
                 .Build();
         });
     }
