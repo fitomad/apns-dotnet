@@ -9,13 +9,43 @@ This package simplifies sending notifications via the Apple Push Notification Se
 - **Error Handling**: Comprehensive error definitions to handle and respond to APNS errors effectively.
 - **Environment Configuration**: Set up easily for development or production environments.
 
+## APNS connection
+
+Please, refer to Apple official documentation to create the certificate or JWT Key used to establish and send a notification request
+
+- [Establishing a connection to Apple Push Notification service (APNs)](https://developer.apple.com/documentation/usernotifications/establishing-a-connection-to-apns)
+- [Establishing a token-based connection to APNs](https://developer.apple.com/documentation/usernotifications/establishing-a-token-based-connection-to-apns)
+- [Establishing a certificate-based connection to APNs](https://developer.apple.com/documentation/usernotifications/establishing-a-certificate-based-connection-to-apns)
+
 ## Installation
 
 To install the package, use:
 
 ```bash
-dotnet add package <PackageName>
+dotnet add package Fitomad.Apns
 ```
+
+## Dependency Injection. Create an `ApnsClient` instance
+
+To create an `ApnsClient` instance, the entry point to the whole Fitomad.Apns framework, developers must use DI.
+
+I provide a helper method registered as an `IServiceCollection` extension named `AddApns` which receives an `ApnsSettings` object as parameter. You can create an ApnsSettings object using the `ApnsSettingsBuilder` object.
+
+This is an example of DI in an Unit Testing (xunit) environment.
+
+```csharp
+var testSettings = new ApnsSettingsBuilder()
+    .InEnvironment(ApnsEnvironment.Development)
+    .SetTopic("com.desappstre.Smarty")
+    .WithPathToX509Certificate2(certPath, certPassword)
+    .Build();
+
+var services = new ServiceCollection();
+services.AddApns(settings: testSettings);
+var provider = services.BuildServiceProvider();
+```
+
+And now, thanks to the built-on DI container available in .NET we can use the `ApnsClient` registered type.
 
 ## Getting Started
 
