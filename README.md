@@ -204,6 +204,19 @@ else
 }
 ```
 
+## Testing
+
+You must set some user-secrets to run the unit-test project
+
+```text
+Apns:TeamId = TEAM-ID
+Apns:KeyId = KEY-ID
+Apns:JwtKeyPath = /path/to/jwt-key
+Apns:DeviceToken = DEVICE-TOKEN
+Apns:CertPath = /path/to/certificate.p12
+Apns:CertPassword = PASSWORD
+```
+
 ## Enumeration Class implementation
 
 I adopt the enumeration class implementation approach instead of the common enumeration type as proposed in the *".NET Microservices: Architecture for Containerized .NET Applications"* book available at dotnet Microsoft website.
