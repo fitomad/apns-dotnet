@@ -22,7 +22,7 @@ Please, refer to Apple official documentation to create the certificate or JWT K
 To install the package, use:
 
 ```bash
-dotnet add package Fitomad.Apns
+dotnet add package Apns
 ```
 
 ## Dependency Injection. Create an `ApnsClient` instance
