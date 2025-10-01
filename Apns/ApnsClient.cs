@@ -39,15 +39,10 @@ public class ApnsClient : IApnsClient
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
     }
-
-    public async Task<ApnsResponse> SendAsync(Notification notification, NotificationSettings settings, string deviceToken)
+    
+    public async Task<ApnsResponse> SendAsync(NotificationContainer notification, NotificationSettings settings, string deviceToken)
     {
-        var notificationContainer = new NotificationContainer
-        {
-            Notification = notification
-        };
-        var payload = JsonSerializer.Serialize(notificationContainer, options: _serializerOptions);
-
+        var payload = JsonSerializer.Serialize(notification, options: _serializerOptions);
         var httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
         AddHttpHeaders(httpContent, settings);
 
@@ -84,7 +79,7 @@ public class ApnsClient : IApnsClient
         return ApnsResponse.Success(apnsGuid);
     }
 
-    public async Task<ApnsResponse> SendAsync(Notification notification, string deviceToken)
+    public async Task<ApnsResponse> SendAsync(NotificationContainer notification, string deviceToken)
     {
         return await SendAsync(notification, NotificationSettings.Default, deviceToken);
     }
