@@ -1,20 +1,25 @@
+using Fitomad.Apns.Entities;
+using Fitomad.Apns.Entities.Notification;
+using Fitomad.Apns.Exceptions;
+using Fitomad.Apns.Services.BearerToken;
+using Fitomad.Apns.Services.Validation;
 using System.Net;
+using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Fitomad.Apns.Entities;
-using Fitomad.Apns.Entities.Notification;
-using Fitomad.Apns.Exceptions;
-using Fitomad.Apns.Services.Validation;
 
 namespace Fitomad.Apns;
 
-public class ApnsClient: IApnsClient
+public class ApnsClient : IApnsClient
 {
+    private readonly IBearerTokenService? _bearerTokenService;
+
     private readonly HttpClient _httpClient;
     private readonly JsonSerializerOptions _serializerOptions;
 
+    private const string ApnsAuthorizationHeader = "Bearer";
     private const string ApnsPushTypeHeader = "apns-push-type";
     private const string ApnsIdHeader = "apns-id";
     private const string ApnsUniqueIdHeader = "apns-unique-id";
@@ -22,17 +27,19 @@ public class ApnsClient: IApnsClient
     private const string ApnsPriorityHeader = "apns-priority";
     private const string ApnsCollapseIdHeader = "apns-collapse-id";
     private const string ApnsTopicHeader = "apns-topic";
-    
-    public ApnsClient(HttpClient httpClient)
+
+    public ApnsClient(HttpClient httpClient, IBearerTokenService? bearerTokenService = null)
     {
+        _bearerTokenService = bearerTokenService;
+
         _httpClient = httpClient;
-        
+
         _serializerOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull
         };
     }
-    
+
     public async Task<ApnsResponse> SendAsync(Notification notification, NotificationSettings settings, string deviceToken)
     {
         var notificationContainer = new NotificationContainer
@@ -47,7 +54,7 @@ public class ApnsClient: IApnsClient
 
         HttpResponseMessage response = await _httpClient.PostAsync(deviceToken, httpContent);
 
-        if(response.StatusCode != HttpStatusCode.OK)
+        if (response.StatusCode != HttpStatusCode.OK)
         {
             ApnsErrorContent errorContent = await response.Content.ReadFromJsonAsync<ApnsErrorContent>();
             ApnsError error = ApnsError.FromContent(errorContent);
@@ -67,7 +74,7 @@ public class ApnsClient: IApnsClient
 
         string id = response.Headers.GetValues(ApnsIdHeader).First();
         var apnsGuid = new ApnsGuid(id, uniqueId);
-        
+
         return ApnsResponse.Success(apnsGuid);
     }
 
@@ -94,7 +101,7 @@ public class ApnsClient: IApnsClient
                 httpContent.Headers.Add(ApnsTopicHeader, liveActivityTopicHeader);
             })
             .Validate();
-        
+
         new Rule()
             .Property(settings.PushType).IsNotNull()
             .Property(settings.PushType).IsEqualsTo(NotificationType.VoIp)
