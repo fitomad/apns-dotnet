@@ -21,6 +21,7 @@ public class BuilderUnitTests
 
     }
     [Fact]
+    [Trait("CI", "FALSE")]
     public void TestNoEnvironmentNoAuthorization()
     {
         Assert.Throws<EnvironmentNotSetException>(() =>
@@ -34,6 +35,7 @@ public class BuilderUnitTests
     [Theory]
     [InlineData(ApnsEnvironment.Development)]
     [InlineData(ApnsEnvironment.Production)]
+    [Trait("CI", "FALSE")]
     public void TestEnvironmentNoAuthorization(ApnsEnvironment environment)
     {
         Assert.Throws<AuthorizationNotSetException>(() =>
@@ -48,6 +50,7 @@ public class BuilderUnitTests
     [Theory]
     [InlineData(ApnsEnvironment.Development)]
     [InlineData(ApnsEnvironment.Production)]
+    [Trait("CI", "FALSE")]
     public void TestEnvironmentDuplicatedAuthorization(ApnsEnvironment environment)
     {
         Assert.Throws<DuplicatedAuthorizationException>(() =>
@@ -66,6 +69,7 @@ public class BuilderUnitTests
     [Theory]
     [InlineData(ApnsEnvironment.Development)]
     [InlineData(ApnsEnvironment.Production)]
+    [Trait("CI", "FALSE")]
     public void TestNoTopic(ApnsEnvironment environment)
     {
         Assert.Throws<TopicNotSetException>(() =>

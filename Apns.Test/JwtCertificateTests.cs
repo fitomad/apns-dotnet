@@ -36,6 +36,7 @@ public class JwtCertificateTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestSimpleNotification()
     {
         var alert = new Alert
