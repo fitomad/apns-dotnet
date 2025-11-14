@@ -46,6 +46,7 @@ public class ClientTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestConnection()
     {
         var alertContent = new Alert()
@@ -68,6 +69,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestLocalizableNotification()
     {
         var alertContent = new LocalizableAlert()
@@ -90,6 +92,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestLocalizableArgumentsNotification()
     {
         var alertContent = new LocalizableAlert()
@@ -115,6 +118,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestBadge()
     {
         var alertContent = new LocalizableAlert()
@@ -138,6 +142,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestBadgeRemove()
     {
         var alertContent = new LocalizableAlert()
@@ -161,6 +166,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestBadgeRemoveWithDedicatedMethod()
     {
         var alertContent = new LocalizableAlert()
@@ -185,6 +191,7 @@ public class ClientTests
 
     [Theory]
     [MemberData(nameof(InterruptionLevels))]
+    [Trait("CI", "FALSE")]
     public async Task TestInterruptionLevel(InterruptionLevel level)
     {
         var alertContent = new LocalizableAlert()
@@ -219,6 +226,7 @@ public class ClientTests
     [InlineData(0.50)]
     [InlineData(0.75)]
     [InlineData(1.0)]
+    [Trait("CI", "FALSE")]
     public async Task TestRelevance(double relevance)
     {
         var alertContent = new LocalizableAlert()
@@ -250,6 +258,7 @@ public class ClientTests
     [InlineData("Grupo Uno")]
     [InlineData("Grupo Dos")]
     [InlineData("Grupo Tres")]
+    [Trait("CI", "FALSE")]
     public async Task TestThreadIdGroup(string group)
     {
         var alertContent = new LocalizableAlert()
@@ -278,6 +287,7 @@ public class ClientTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestAllowContentModification()
     {
         var alertContent = new Alert()

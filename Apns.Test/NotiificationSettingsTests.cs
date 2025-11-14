@@ -35,6 +35,7 @@ public class NotificationSettingsTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestApnsIdSetting()
     {
         var testSettings = new NotificationSettings
@@ -57,6 +58,7 @@ public class NotificationSettingsTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestApnsIdSettingWrongFormat()
     {
         await Assert.ThrowsAsync<ApnsIdHeaderNonValidException>(async () =>
@@ -80,6 +82,7 @@ public class NotificationSettingsTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestNotificationTypeHeader()
     {
         var testSettings = new NotificationSettings
@@ -103,6 +106,7 @@ public class NotificationSettingsTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestNotificationWrongTypeHeader()
     {
         var testSettings = new NotificationSettings
@@ -126,6 +130,7 @@ public class NotificationSettingsTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestNotificationExpiration()
     {
         var testSettings = new NotificationSettings
@@ -149,6 +154,7 @@ public class NotificationSettingsTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestNotificationCollapseId()
     {
         var testSettings = new NotificationSettings

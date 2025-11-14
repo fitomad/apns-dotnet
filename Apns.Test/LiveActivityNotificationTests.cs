@@ -35,6 +35,7 @@ public class LiveActivityNotificationTests
     }
 
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestLiveActivityStart()
     {
         var notificationSettings = new NotificationSettings
@@ -70,6 +71,7 @@ public class LiveActivityNotificationTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestLiveActivityUpdate()
     {
         var notificationSettings = new NotificationSettings
@@ -105,6 +107,7 @@ public class LiveActivityNotificationTests
     }
     
     [Fact]
+    [Trait("CI", "FALSE")]
     public async Task TestLiveActivityEnd()
     {
         var notificationSettings = new NotificationSettings

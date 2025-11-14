@@ -6,6 +6,7 @@ namespace Fitomad.Apns.Test;
 public class NotificationBuilderTests
 {
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSilentNotificationErrorAlert()
     {
         Assert.Throws<SilentNotificationConflictException>(() =>
@@ -24,6 +25,7 @@ public class NotificationBuilderTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSilentNotificationBadgeAlert()
     {
         Assert.Throws<SilentNotificationConflictException>(() =>
@@ -36,6 +38,7 @@ public class NotificationBuilderTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSilentNotificationSound()
     {
         Assert.Throws<SilentNotificationConflictException>(() =>
@@ -55,6 +58,7 @@ public class NotificationBuilderTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSilentNotification()
     {
         Notification notification = new NotificationBuilder()
@@ -65,6 +69,7 @@ public class NotificationBuilderTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSoundDefault()
     {
         Notification notification = new NotificationBuilder()
@@ -79,6 +84,7 @@ public class NotificationBuilderTests
     [InlineData("robot")]
     [InlineData("space")]
     [InlineData("pinball")]
+    [Trait("CI", "TRUE")]
     public void TestSound(string sound)
     {
         Notification notification = new NotificationBuilder()
@@ -90,6 +96,7 @@ public class NotificationBuilderTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestSoundSetting()
     {
         Notification notification = new NotificationBuilder()

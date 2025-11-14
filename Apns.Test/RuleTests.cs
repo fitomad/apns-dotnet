@@ -6,6 +6,7 @@ namespace Fitomad.Apns.Test;
 public class RuleTests
 {
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleTrue()
     {
         IRule numberRules = new Rule()
@@ -15,6 +16,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleFalse()
     {
         IRule numberRules = new Rule()
@@ -24,6 +26,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleCollectionTrue()
     {
         IRule numberRules = new Rule()
@@ -35,6 +38,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleCollectionAllFalse()
     {
         IRule numberRules = new Rule()
@@ -46,6 +50,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleCollectionOnlyOneFalse()
     {
         IRule numberRules = new Rule()
@@ -57,6 +62,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleWithFilterResultOk()
     {
         IRule numberRules = new Rule()
@@ -67,6 +73,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleWithFilterResultFailure()
     {
         IRule numberRules = new Rule()
@@ -77,6 +84,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleWithFilterNotSatisfied()
     {
         IRule numberRules = new Rule()
@@ -87,6 +95,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleFailureExecution()
     {
         Assert.Throws<ArithmeticException>(() =>
@@ -99,6 +108,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleOneFailureExecution()
     {
         Assert.Throws<ArithmeticException>(() =>
@@ -112,6 +122,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleFailureNotThrowExecution()
     {
         IRule numberRules = new Rule()
@@ -122,6 +133,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleNoFailureNotThrowExecution()
     {
         IRule numberRules = new Rule()
@@ -133,6 +145,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleNoFailureNotThrowExecutionWithFilterOn()
     {
         IRule numberRules = new Rule()
@@ -145,6 +158,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleNoFailureNotThrowExecutionWithFilterOff()
     {
         Assert.Throws<ArithmeticException>(() =>
@@ -159,6 +173,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesEqualsString()
     {
         var sampleUser = new MockUser
@@ -174,6 +189,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesEqualsInt()
     {
         var sampleUser = new MockUser
@@ -189,6 +205,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesEqualsDouble()
     {
         var sampleUser = new MockUser
@@ -204,6 +221,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestMultiplePropertiesEqualsOK()
     {
         var sampleUser = new MockUser
@@ -223,6 +241,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestMultiplePropertiesEqualsFailureByOne()
     {
         var sampleUser = new MockUser
@@ -242,6 +261,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestMultiplePropertiesEqualsFailureByTwo()
     {
         var sampleUser = new MockUser
@@ -261,6 +281,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeIntOK()
     {
         var sampleUser = new MockUser
@@ -276,6 +297,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeIntFailureUpperBound()
     {
         var sampleUser = new MockUser
@@ -291,6 +313,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeIntFailureLowerBound()
     {
         var sampleUser = new MockUser
@@ -306,6 +329,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeDoubleOK()
     {
         var sampleUser = new MockUser
@@ -321,6 +345,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeDoubleFailureUpperBound()
     {
         var sampleUser = new MockUser
@@ -336,6 +361,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertiesRangeDoubleFailureLowerBound()
     {
         var sampleUser = new MockUser
@@ -351,6 +377,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleAndProperties()
     {
         var sampleUser = new MockUser
@@ -372,6 +399,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestRuleAndPropertiesFailure()
     {
         var sampleUser = new MockUser
@@ -394,6 +422,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyReferenceNull()
     {
         string sampleTest = null;
@@ -406,6 +435,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyReferenceNotNull()
     {
         var sampleTest = "Hello world!";
@@ -418,6 +448,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyNullableTypeNull()
     {
         int? sampleTest = null;
@@ -429,6 +460,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyNullableTypeNotNull()
     {
         int? sampleTest = 50;
@@ -441,6 +473,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyNullableTypeRange()
     {
         int? sampleTest = 50;
@@ -453,6 +486,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestPropertyNullableTypeNullRange()
     {
         int? sampleTest = null;
@@ -465,6 +499,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestTheBigOneOK()
     {
         var mockUser = new MockUser
@@ -490,6 +525,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestEnumerationEqual()
     {
         var status = MockStatus.On;
@@ -502,6 +538,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestEnumerationNonEqual()
     {
         var status = MockStatus.On;
@@ -514,6 +551,7 @@ public class RuleTests
     }
 
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestEnumerationInRange()
     {
         var status = MockStatus.StandBy;
@@ -526,6 +564,7 @@ public class RuleTests
     }
     
     [Fact]
+    [Trait("CI", "TRUE")]
     public void TestEnumerationOutsideRange()
     {
         var status = MockStatus.On;
