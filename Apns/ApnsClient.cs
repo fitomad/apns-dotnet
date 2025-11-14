@@ -40,11 +40,11 @@ public class ApnsClient: IApnsClient
             Notification = notification
         };
         
-        AddHttpHeaders(settings);
-        
         var payload = JsonSerializer.Serialize(notificationContainer, options: _serializerOptions);
         var httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
-        
+
+        AddHttpHeaders(httpContent, settings);
+
         HttpResponseMessage response = await _httpClient.PostAsync(deviceToken, httpContent);
 
         if(response.StatusCode != HttpStatusCode.OK)
@@ -76,11 +76,11 @@ public class ApnsClient: IApnsClient
         return await SendAsync(notification, NotificationSettings.Default, deviceToken);
     }
 
-    private void AddHttpHeaders(NotificationSettings settings)
+    private void AddHttpHeaders(HttpContent httpContent, NotificationSettings settings)
     {
         new Rule()
             .Property(settings.PushType).IsNotNull()
-            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPushTypeHeader, settings.PushType.GetApnsString()))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsPushTypeHeader, settings.PushType.GetApnsString()))
             .Validate();
 
         new Rule()
@@ -88,10 +88,10 @@ public class ApnsClient: IApnsClient
             .Property(settings.PushType).IsEqualsTo(NotificationType.LiveActivity)
             .OnSuccess(() =>
             {
-                var baseTopicHeader = _httpClient.DefaultRequestHeaders.GetValues(ApnsTopicHeader).First<string>();
+                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
                 var liveActivityTopicHeader = $"{baseTopicHeader}.push-type.liveactivity";
                     
-                _httpClient.DefaultRequestHeaders.Add(ApnsTopicHeader, liveActivityTopicHeader);
+                httpContent.Headers.Add(ApnsTopicHeader, liveActivityTopicHeader);
             })
             .Validate();
         
@@ -100,33 +100,33 @@ public class ApnsClient: IApnsClient
             .Property(settings.PushType).IsEqualsTo(NotificationType.VoIp)
             .OnSuccess(() =>
             {
-                var baseTopicHeader = _httpClient.DefaultRequestHeaders.GetValues(ApnsTopicHeader).First<string>();
+                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
                 var voipTopicHeader = $"{baseTopicHeader}.voip";
                     
-                _httpClient.DefaultRequestHeaders.Add(ApnsTopicHeader, voipTopicHeader);
+                httpContent.Headers.Add(ApnsTopicHeader, voipTopicHeader);
             })
             .Validate();
 
         new Rule()
             .Property(settings.NotificationId).IsNotNull()
             .Property(settings.NotificationId).MatchRegularExpression(@"^\w{8}-\w{4}-\w{4}-\w{4}-\w{12}$")
-            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsIdHeader, settings.NotificationId))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsIdHeader, settings.NotificationId))
             .OnFailure(() => throw new ApnsIdHeaderNonValidException())
             .Validate();
 
         new Rule()
             .Property(settings.ExpirationTime).IsNotNull()
-            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString()))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsExpirationHeader, settings.ExpirationTime.ToString()))
             .Validate();
 
         new Rule()
             .Property(settings.Priority).IsNotNull()
-            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsPriorityHeader, settings.Priority.GetApnsString()))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsPriorityHeader, settings.Priority.GetApnsString()))
             .Validate();
 
         new Rule()
             .Property(settings.CollapseId).IsNotNull()
-            .OnSuccess(() => _httpClient.DefaultRequestHeaders.Add(ApnsCollapseIdHeader, settings.CollapseId))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsCollapseIdHeader, settings.CollapseId))
             .Validate();
     }
 }
