@@ -54,9 +54,18 @@ public class ApnsClient: IApnsClient
 
             return ApnsResponse.Failure(error);
         }
-        
+
+        string? uniqueId;
+        try
+        {
+            uniqueId = response.Headers.GetValues(ApnsUniqueIdHeader).First();
+        }
+        catch (InvalidOperationException)
+        {
+            uniqueId = null;
+        }
+
         string id = response.Headers.GetValues(ApnsIdHeader).First();
-        string uniqueId = response.Headers.GetValues(ApnsUniqueIdHeader).First();
         var apnsGuid = new ApnsGuid(id, uniqueId);
         
         return ApnsResponse.Success(apnsGuid);

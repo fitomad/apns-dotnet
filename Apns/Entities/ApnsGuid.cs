@@ -1,3 +1,3 @@
 namespace Fitomad.Apns.Entities;
 
-public record ApnsGuid(string ApnsId, string ApnsUniqueId);
+public record ApnsGuid(string ApnsId, string? ApnsUniqueId);
