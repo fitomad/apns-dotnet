@@ -64,7 +64,8 @@ public class LiveActivityNotificationTests
             .WithLiveActivityContent(dataContent)
             .Build(); 
         
-        ApnsResponse response = await _client.SendAsync(liveActivityNotification, notificationSettings: notificationSettings, deviceToken: _deviceToken);
+        ApnsResponse response = await _client.SendAsync(new NotificationContainer { Notification = liveActivityNotification },
+            notificationSettings: notificationSettings, deviceToken: _deviceToken);
         
         Assert.True(response.IsFailure);
         Assert.Equal("TopicDisallowed", response.Error.Key);
@@ -98,10 +99,11 @@ public class LiveActivityNotificationTests
             .SetLiveActivityAttributeType("MockAttributeType")
             .SetLiveActivityStartAttributes(dataContent)
             .WithLiveActivityContent(dataContent)
-            .Build(); 
-        
-        ApnsResponse response = await _client.SendAsync(liveActivityNotification, notificationSettings: notificationSettings, deviceToken: _deviceToken);
-        
+            .Build();
+
+        ApnsResponse response = await _client.SendAsync(new NotificationContainer { Notification = liveActivityNotification },
+            notificationSettings: notificationSettings, deviceToken: _deviceToken);
+
         Assert.True(response.IsFailure);
         Assert.Equal("TopicDisallowed", response.Error.Key);
     }
@@ -134,10 +136,11 @@ public class LiveActivityNotificationTests
             .SetLiveActivityAttributeType("MockAttributeType")
             .SetLiveActivityStartAttributes(dataContent)
             .WithLiveActivityContent(dataContent)
-            .Build(); 
-        
-        ApnsResponse response = await _client.SendAsync(liveActivityNotification, notificationSettings: notificationSettings, deviceToken: _deviceToken);
-        
+            .Build();
+
+        ApnsResponse response = await _client.SendAsync(new NotificationContainer { Notification = liveActivityNotification },
+            notificationSettings: notificationSettings, deviceToken: _deviceToken);
+
         Assert.True(response.IsFailure);
         Assert.Equal("TopicDisallowed", response.Error.Key);
     }
