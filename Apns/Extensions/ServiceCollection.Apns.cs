@@ -1,14 +1,14 @@
-using System.Net;
-using System.Net.Http.Headers;
-using Microsoft.Extensions.DependencyInjection;
 using Fitomad.Apns.Entities.Settings;
 using Fitomad.Apns.Services.BearerToken;
+using Microsoft.Extensions.Caching.Distributed;
+using Microsoft.Extensions.DependencyInjection;
+using System.Net;
+using System.Net.Http.Headers;
 
 namespace Fitomad.Apns.Extensions;
 
 public static class ServiceCollectionApns
 {
-    private const string ApnsAuthorizationHeader = "Bearer";
     private const string ApnsBaseUrl = "3/device";
     private const string ApnsTopicHeader = "apns-topic";
     
@@ -23,16 +23,16 @@ public static class ServiceCollectionApns
             var jsonMediaType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(jsonMediaType);
             client.DefaultRequestHeaders.Add(ApnsTopicHeader, settings.Topic);
-
-            if(settings is { IsTokenAuthorizationBased: true, JsonToken: ApnsJsonToken jsonToken })
-            {
-                var bearerTokenService = new BearerTokenService();
-                string bearerToken = bearerTokenService.MakeBearerToken(jsonToken);
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(ApnsAuthorizationHeader, bearerToken);
-            }
         });
 
-        if(settings.IsCertificateAuthorizationBased)
+        if (settings is { IsTokenAuthorizationBased: true, JsonToken: ApnsJsonToken jsonToken })
+        {
+            services.AddSingleton<IBearerTokenService, BearerTokenService>(
+                x => new(settings, x.GetRequiredService<IDistributedCache>())
+                );
+        }
+
+        if (settings.IsCertificateAuthorizationBased)
         {
             var httpClientHandler = new HttpClientHandler();
             httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
