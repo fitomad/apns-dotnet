@@ -48,9 +48,10 @@ public class JwtCertificateTests
         var notification = new NotificationBuilder()
             .WithAlert(alert)
             .Build();
-        
-        ApnsResponse response = await _client.SendAsync(notification, deviceToken: _deviceToken);
-        
+
+        ApnsResponse response = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
+
         Assert.True(response.IsSuccess);
     }
 }
