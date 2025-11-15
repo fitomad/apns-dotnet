@@ -60,7 +60,8 @@ public class ClientTests
             .WithAlert(alertContent)
             .Build();
         
-       ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+       ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer 
+       { Notification = notification }, deviceToken: _deviceToken);
        
         Assert.True(apnsResponse.IsSuccess);
         Assert.NotNull(apnsResponse.Guid);
@@ -82,8 +83,9 @@ public class ClientTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
         Assert.NotNull(apnsResponse.Guid);
@@ -108,8 +110,9 @@ public class ClientTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);
@@ -132,8 +135,9 @@ public class ClientTests
             .WithAlert(alertContent)
             .WithBadgeCount(1)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess);
         Assert.NotNull(apnsResponse.Guid);
@@ -156,8 +160,9 @@ public class ClientTests
             .WithAlert(alertContent)
             .WithBadgeCount(0)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess);   
         Assert.NotNull(apnsResponse.Guid);
@@ -180,8 +185,9 @@ public class ClientTests
             .WithAlert(alertContent)
             .ClearBadgeCount()
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);
@@ -210,8 +216,9 @@ public class ClientTests
             .Build();
 
         Assert.Equal(notification.InterruptionLevel, level.Value);
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);
@@ -245,8 +252,9 @@ public class ClientTests
             .Build();
 
         Assert.Equal(notification.RelevanceScore, relevance);
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);
@@ -277,8 +285,9 @@ public class ClientTests
             .Build();
 
         Assert.Equal(notification.ThreadId, group);
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);
@@ -303,8 +312,9 @@ public class ClientTests
             .Build();
 
         Assert.Equal(notification.MutableContent, 1);
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer
+        { Notification = notification }, deviceToken: _deviceToken);
 
         Assert.True(apnsResponse.IsSuccess); 
         Assert.NotNull(apnsResponse.Guid);

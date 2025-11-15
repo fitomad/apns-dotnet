@@ -2,8 +2,8 @@ using System.Text.Json.Serialization;
 
 namespace Fitomad.Apns.Entities.Notification;
 
-public struct NotificationContainer
+public class NotificationContainer
 {
     [JsonPropertyName("aps")]
-    public Notification Notification { get; internal set; }
+    public Notification? Notification { get; init; }
 }
