@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <!-- nuget -->
     <PackageId>Apns</PackageId>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Authors>Adolfo Vera</Authors>
     <Company>Fitomad</Company>
     <Description>Apns by @fitomad is a package that simplifies the process of sending push notifications to Apple devices using the Apple Push Notification Service (APNS). Whether you're managing complex messaging workflows or sending single notifications, this library provides an efficient and user-friendly interface to integrate APNS into your .NET applications. Features include support for token-based authentication, notification payload customization, and seamless connectivity to APNS servers for reliable delivery. Ideal for developers looking to enhance their app's communication capabilities with Apple devices.</Description>
