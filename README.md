@@ -98,10 +98,13 @@ var developmentSettings = new ApnsSettingsBuilder()
     .Build();
 
 var services = new ServiceCollection();
+services.AddDistributedMemoryCache(); // Required for JWT token caching
 services.AddApns(settings: developmentSettings);
 
 var provider = services.BuildServiceProvider();
 ```
+
+Note that the `AddDistributedMemoryCache` method is invoked to register the in-memory cache service used to store the JWT token until it expires. In a production scenario, you will likely want to use a different implementation of the distributed cache. See [Microsoft's documentation](https://learn.microsoft.com/en-us/aspnet/core/performance/caching/distributed) for more information.
 
 ## Build Notifications
 
