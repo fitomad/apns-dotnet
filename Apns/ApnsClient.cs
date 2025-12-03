@@ -46,14 +46,20 @@ public class ApnsClient : IApnsClient
         {
             Notification = notification
         };
-        
         var payload = JsonSerializer.Serialize(notificationContainer, options: _serializerOptions);
-        var httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
 
+        var httpContent = new StringContent(payload, Encoding.UTF8, "application/json");
         AddHttpHeaders(httpContent, settings);
 
-        HttpResponseMessage response = await _httpClient.PostAsync(deviceToken, httpContent);
+        HttpRequestMessage request = new(HttpMethod.Post, deviceToken)
+        { Content = httpContent };
+        if (_bearerTokenService is not null) 
+        {
+            string bearerToken = _bearerTokenService.GetBearerToken();
+            request.Headers.Authorization = new AuthenticationHeaderValue(ApnsAuthorizationHeader, bearerToken);
+        }
 
+        HttpResponseMessage response = await _httpClient.SendAsync(request);
         if (response.StatusCode != HttpStatusCode.OK)
         {
             ApnsErrorContent errorContent = await response.Content.ReadFromJsonAsync<ApnsErrorContent>();
@@ -97,7 +103,7 @@ public class ApnsClient : IApnsClient
             {
                 var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
                 var liveActivityTopicHeader = $"{baseTopicHeader}.push-type.liveactivity";
-                    
+
                 httpContent.Headers.Add(ApnsTopicHeader, liveActivityTopicHeader);
             })
             .Validate();
@@ -109,7 +115,7 @@ public class ApnsClient : IApnsClient
             {
                 var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
                 var voipTopicHeader = $"{baseTopicHeader}.voip";
-                    
+
                 httpContent.Headers.Add(ApnsTopicHeader, voipTopicHeader);
             })
             .Validate();
