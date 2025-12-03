@@ -52,7 +52,8 @@ public class NotificationSettingsTests
             .WithAlert(alertContent)
             .Build();
         
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification }, 
+            notificationSettings: testSettings, deviceToken: _deviceToken);
         
         Assert.True(apnsResponse.IsSuccess);
     }
@@ -77,7 +78,8 @@ public class NotificationSettingsTests
                 .WithAlert(alertContent)
                 .Build();
         
-            ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
+            ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification }, 
+                notificationSettings: testSettings, deviceToken: _deviceToken);
         });
     }
 
@@ -99,9 +101,10 @@ public class NotificationSettingsTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
-        
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification },
+                notificationSettings: testSettings, deviceToken: _deviceToken);
+
         Assert.True(apnsResponse.IsSuccess);
     }
     
@@ -123,9 +126,10 @@ public class NotificationSettingsTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
-        
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification },
+                notificationSettings: testSettings, deviceToken: _deviceToken);
+
         Assert.False(apnsResponse.IsSuccess);
     }
 
@@ -147,9 +151,10 @@ public class NotificationSettingsTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
-        
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification },
+                notificationSettings: testSettings, deviceToken: _deviceToken);
+
         Assert.True(apnsResponse.IsSuccess);
     }
     
@@ -171,9 +176,10 @@ public class NotificationSettingsTests
         Notification notification = new NotificationBuilder()
             .WithAlert(alertContent)
             .Build();
-        
-        ApnsResponse apnsResponse = await _client.SendAsync(notification, notificationSettings: testSettings, deviceToken: _deviceToken);
-        
+
+        ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification },
+                notificationSettings: testSettings, deviceToken: _deviceToken);
+
         Assert.True(apnsResponse.IsSuccess);
     }
 }
