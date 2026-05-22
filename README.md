@@ -122,7 +122,7 @@ Notification notification = new NotificationBuilder()
     .WithAlert(alertContent)
     .Build();
 
-ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification }, deviceToken: _deviceToken);
 ```
 
 ```csharp
@@ -140,7 +140,7 @@ Notification notification = new NotificationBuilder()
     .WithAlert(alertContent)
     .Build();
 
-ApnsResponse apnsResponse = await _client.SendAsync(notification, deviceToken: _deviceToken);
+ApnsResponse apnsResponse = await _client.SendAsync(new NotificationContainer { Notification = notification }, deviceToken: _deviceToken);
 ```
 
 ### Live Activity 
@@ -178,7 +178,7 @@ var liveActivityNotification = new NotificationBuilder()
     .WithLiveActivityContent(dataContent)
     .Build(); 
 
-ApnsResponse response = await _client.SendAsync(liveActivityNotification, 
+ApnsResponse response = await _client.SendAsync(new NotificationContainer { Notification = liveActivityNotification }, 
                                                 notificationSettings: notificationSettings, 
                                                 deviceToken: _deviceToken);
 ```
@@ -193,7 +193,7 @@ There are two additional properties that are fulfill depends on the response.
 - **Failure**: Check the `Error` property that implements an `ApnsError` record with the error code and description provided by Apple.
 
 ```csharp
-ApnsResponse response = await _client.SendAsync(liveActivityNotification, 
+ApnsResponse response = await _client.SendAsync(new NotificationContainer { Notification = liveActivityNotification }, 
                                                 notificationSettings: notificationSettings, 
                                                 deviceToken: _deviceToken)
                                                 
@@ -261,7 +261,7 @@ Fluent API Design is a programming style that prioritizes easy-to-read, chainabl
       property.IsNotNull()
               .InRange(1, 10)
               .MatchRegularExpression(@"\d+");
-      ```
+    ```
 
 ### Practical Usage for APNS Rule Validation:
 
