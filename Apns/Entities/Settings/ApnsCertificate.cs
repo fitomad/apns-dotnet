@@ -13,12 +13,11 @@ public record ApnsCertificate
 
     public ApnsCertificate(string pathToCertificate)
     {
-        X509 = new X509Certificate2(pathToCertificate);
+        X509 = X509CertificateLoader.LoadCertificateFromFile(pathToCertificate);
     }
     
     public ApnsCertificate(string pathToCertificate, string password)
     {
-        X509 = new X509Certificate2(pathToCertificate, password);
-
+        X509 = X509CertificateLoader.LoadPkcs12FromFile(pathToCertificate, password);
     }
 }

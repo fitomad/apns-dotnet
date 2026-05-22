@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Security.Authentication;
 
 namespace Fitomad.Apns.Extensions;
 
@@ -25,21 +26,22 @@ public static class ServiceCollectionApns
             client.DefaultRequestHeaders.Add(ApnsTopicHeader, settings.Topic);
         });
 
-        if (settings is { IsTokenAuthorizationBased: true, JsonToken: ApnsJsonToken jsonToken })
+        switch (settings) 
         {
-            services.AddSingleton<IBearerTokenService, BearerTokenService>(
-                x => new(settings, x.GetRequiredService<IDistributedCache>())
-                );
-        }
-
-        if (settings.IsCertificateAuthorizationBased)
-        {
-            var httpClientHandler = new HttpClientHandler();
-            httpClientHandler.ClientCertificateOptions = ClientCertificateOption.Manual;
-            httpClientHandler.ServerCertificateCustomValidationCallback = (a, b, c, d) => true;
-            httpClientHandler.ClientCertificates.Add(settings.Certificate?.X509);
-            
-            httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => httpClientHandler);
+            case { IsTokenAuthorizationBased: true, JsonToken: ApnsJsonToken jsonToken }:
+                services.AddSingleton<IBearerTokenService, BearerTokenService>(
+                    x => new(settings, x.GetRequiredService<IDistributedCache>())
+                    );
+                break;
+            case { IsCertificateAuthorizationBased: true, Certificate: ApnsCertificate certificate }:
+                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                {
+                    ClientCertificates = { certificate.X509 },
+                    ClientCertificateOptions = ClientCertificateOption.Manual,
+                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+                });
+                break;
         }
     }
 }

@@ -4,10 +4,10 @@ namespace Fitomad.Apns.Services.Validation;
 
 internal sealed class Property<TValue> : IProperty<TValue> where TValue : IEquatable<TValue>, IComparable<TValue>
 {
-    private readonly TValue _value;
+    private readonly TValue? _value;
     private readonly IRule _rule;
 
-    internal Property(TValue value, IRule rule)
+    internal Property(TValue? value, IRule rule)
     {
         _value = value;
         _rule = rule;
@@ -15,7 +15,7 @@ internal sealed class Property<TValue> : IProperty<TValue> where TValue : IEquat
 
     public IRule IsEqualsTo(TValue value)
     {
-        _rule.VerifyThat(() => _value.Equals(value));
+        _rule.VerifyThat(() => value.Equals(_value));
         return _rule;
     }
 
@@ -41,7 +41,7 @@ internal sealed class Property<TValue> : IProperty<TValue> where TValue : IEquat
 
     public IRule MatchRegularExpression(string expression)
     {
-        _rule.VerifyThat(() => Regex.IsMatch(_value.ToString(), expression));
+        _rule.VerifyThat(() => _value?.ToString() is string s && Regex.IsMatch(s, expression));
         
         return _rule;
     }

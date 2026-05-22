@@ -17,14 +17,14 @@ public sealed class NotificationType : ApnsEnumeration, IApnsRepresentable, IEqu
     {
     }
 
-    public bool Equals(NotificationType other)
+    public bool Equals(NotificationType? other)
     {
-        return Key == other.Key;
+        return Key == other?.Key;
     }
 
-    public int CompareTo(NotificationType other)
+    public int CompareTo(NotificationType? other)
     {
-        return Key.CompareTo(other.Key);
+        return Key.CompareTo(other?.Key);
     }
 
     public string GetApnsString()

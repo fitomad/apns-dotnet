@@ -58,29 +58,29 @@ public sealed class LiveActivityNotificationBuilder: ILiveActivityNotificationBu
 
     public INotificationBuilder UseRegularNotification()
     {
-        INotificationBuilder weakNotificationBuilder;
-        
-        bool isAlive = _notificationBuilder.TryGetTarget(out weakNotificationBuilder);
+        INotificationBuilder? weakNotificationBuilder;
 
-        if(!isAlive)
+        if (_notificationBuilder.TryGetTarget(out weakNotificationBuilder))
+        {
+            return weakNotificationBuilder;
+        }
+        else 
         {
             throw new NotificationBuilderNullReferenceException();
         }
-
-        return weakNotificationBuilder;
     }
 
     public Notification Build()
     {
-        INotificationBuilder weakNotificationBuilder;
-        
-        bool isAlive = _notificationBuilder.TryGetTarget(out weakNotificationBuilder);
+        INotificationBuilder? weakNotificationBuilder;
 
-        if(!isAlive)
+        if (_notificationBuilder.TryGetTarget(out weakNotificationBuilder))
+        {
+            return weakNotificationBuilder.Build();
+        }
+        else
         {
             throw new NotificationBuilderNullReferenceException();
         }
-
-        return weakNotificationBuilder.Build();
     }
 }

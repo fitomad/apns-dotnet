@@ -5,7 +5,7 @@ internal interface IApnsRepresentable
     string GetApnsString();
 }
 
-public abstract class ApnsEnumeration
+public abstract class ApnsEnumeration : IEquatable<ApnsEnumeration?>
 {
     public string Value { get; private set; }
     public int Key { get; private set; }
@@ -16,7 +16,7 @@ public abstract class ApnsEnumeration
         Value = value;
     }
 
-    public override bool Equals(object obj)
+    public override bool Equals(object? obj)
     {
         if(obj is not ApnsEnumeration otherEnumeration)
         {
@@ -27,5 +27,27 @@ public abstract class ApnsEnumeration
         var keyMatches = Key.Equals(otherEnumeration.Key);
 
         return typeMatches && keyMatches;
+    }
+
+    public bool Equals(ApnsEnumeration? other)
+    {
+        return other is not null &&
+               Value == other.Value &&
+               Key == other.Key;
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(Value, Key);
+    }
+
+    public static bool operator ==(ApnsEnumeration? left, ApnsEnumeration? right)
+    {
+        return EqualityComparer<ApnsEnumeration>.Default.Equals(left, right);
+    }
+
+    public static bool operator !=(ApnsEnumeration? left, ApnsEnumeration? right)
+    {
+        return !(left == right);
     }
 }

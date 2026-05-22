@@ -4,10 +4,10 @@ public sealed class ApnsResponse
 {
     public bool IsSuccess { get; }
     public bool IsFailure => !IsSuccess;
-    public ApnsError Error { get; }
-    public ApnsGuid Guid { get; }
+    public ApnsError? Error { get; }
+    public ApnsGuid? Guid { get; }
 
-    private ApnsResponse(bool isSuccess, ApnsError error, ApnsGuid guid)
+    private ApnsResponse(bool isSuccess, ApnsError? error, ApnsGuid? guid)
     {
         IsSuccess = isSuccess;
         Error = error;
@@ -15,5 +15,5 @@ public sealed class ApnsResponse
     }
 
     public static ApnsResponse Success(ApnsGuid identifiers) => new(true, ApnsError.None, identifiers);
-    public static ApnsResponse Failure(ApnsError error) => new(false, error, null); 
+    public static ApnsResponse Failure(ApnsError? error) => new(false, error, null); 
 }

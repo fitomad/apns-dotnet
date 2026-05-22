@@ -7,5 +7,5 @@ namespace Fitomad.Apns.Entities.Notification;
 public abstract class AlertBase
 {
     [JsonPropertyName("launch-image")]
-    public string LaunchImage { get; set; }
+    public string? LaunchImage { get; set; }
 }

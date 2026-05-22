@@ -10,14 +10,14 @@ public sealed class LiveActivityEvent : ApnsEnumeration, IApnsRepresentable,IEqu
     {
     }
 
-    public bool Equals(LiveActivityEvent other)
+    public bool Equals(LiveActivityEvent? other)
     {
-        return Key == other.Key;
+        return Key == other?.Key;
     }
 
-    public int CompareTo(LiveActivityEvent other)
+    public int CompareTo(LiveActivityEvent? other)
     {
-        return Key.CompareTo(other.Key);
+        return Key.CompareTo(other?.Key);
     }
 
     public string GetApnsString()
