@@ -38,7 +38,6 @@ public static class ServiceCollectionApns
             case { IsCertificateAuthorizationBased: true, Certificate: ApnsCertificate certificate }:
                 httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
-                    EnableMultipleHttp2Connections = true,
                     SslOptions =
                     {
                         ApplicationProtocols = new() { SslApplicationProtocol.Http2 },
