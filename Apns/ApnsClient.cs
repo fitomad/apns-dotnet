@@ -48,7 +48,12 @@ public class ApnsClient : IApnsClient
         AddHttpHeaders(httpContent, settings);
 
         HttpRequestMessage request = new(HttpMethod.Post, deviceToken)
-        { Content = httpContent };
+        {
+            Content = httpContent,
+            Version = HttpVersion.Version20,
+            VersionPolicy = HttpVersionPolicy.RequestVersionExact,
+        };
+
         if (_bearerTokenService is not null) 
         {
             string? bearerToken = _bearerTokenService.GetBearerToken();

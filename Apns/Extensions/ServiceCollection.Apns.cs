@@ -4,6 +4,7 @@ using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.DependencyInjection;
 using System.Net;
 using System.Net.Http.Headers;
+using System.Net.Security;
 using System.Security.Authentication;
 
 namespace Fitomad.Apns.Extensions;
@@ -20,6 +21,7 @@ public static class ServiceCollectionApns
             var apnsBaseAddress = $"https://{settings.Host}/{ApnsBaseUrl}/";
             client.BaseAddress = new Uri(apnsBaseAddress);
             client.DefaultRequestVersion = HttpVersion.Version20;
+            client.DefaultVersionPolicy = HttpVersionPolicy.RequestVersionExact;
             
             var jsonMediaType = new MediaTypeWithQualityHeaderValue("application/json");
             client.DefaultRequestHeaders.Accept.Add(jsonMediaType);
@@ -34,12 +36,15 @@ public static class ServiceCollectionApns
                     );
                 break;
             case { IsCertificateAuthorizationBased: true, Certificate: ApnsCertificate certificate }:
-                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => new HttpClientHandler()
+                httpClientBuilder.ConfigurePrimaryHttpMessageHandler(() => new SocketsHttpHandler()
                 {
-                    ClientCertificates = { certificate.X509 },
-                    ClientCertificateOptions = ClientCertificateOption.Manual,
-                    ServerCertificateCustomValidationCallback = HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-                    SslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+                    EnableMultipleHttp2Connections = true,
+                    SslOptions =
+                    {
+                        ApplicationProtocols = new() { SslApplicationProtocol.Http2 },
+                        EnabledSslProtocols = SslProtocols.Tls12 | SslProtocols.Tls13,
+                        ClientCertificates = new() { certificate.X509 },
+                    }
                 });
                 break;
         }
