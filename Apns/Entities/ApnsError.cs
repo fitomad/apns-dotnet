@@ -40,7 +40,7 @@ public record ApnsError(int StatusCode, string Key, string Reason)
     public static readonly ApnsError ServiceUnavailable = new(503, "ServiceUnavailable", "The service is unavailable.");
     public static readonly ApnsError Shutdown = new(503, "Shutdown", "The APNs server is shutting down.");
 
-    public static ApnsError FromContent(ApnsErrorContent content)
+    public static ApnsError? FromContent(ApnsErrorContent content)
     {
         ApnsError[] errors =
         [
@@ -79,7 +79,7 @@ public record ApnsError(int StatusCode, string Key, string Reason)
 
         try
         {
-            ApnsError currentError = errors.Where(error => error.Key == content.Reason)
+            ApnsError? currentError = errors.Where(error => error.Key == content.Reason)
                 .SingleOrDefault<ApnsError>();
         
             return currentError;

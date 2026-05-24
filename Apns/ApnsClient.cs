@@ -48,10 +48,15 @@ public class ApnsClient : IApnsClient
         AddHttpHeaders(httpContent, settings);
 
         HttpRequestMessage request = new(HttpMethod.Post, deviceToken)
-        { Content = httpContent };
+        {
+            Content = httpContent,
+            Version = HttpVersion.Version20,
+            VersionPolicy = HttpVersionPolicy.RequestVersionExact,
+        };
+
         if (_bearerTokenService is not null) 
         {
-            string bearerToken = _bearerTokenService.GetBearerToken();
+            string? bearerToken = _bearerTokenService.GetBearerToken();
             request.Headers.Authorization = new AuthenticationHeaderValue(ApnsAuthorizationHeader, bearerToken);
         }
 
@@ -59,7 +64,7 @@ public class ApnsClient : IApnsClient
         if (response.StatusCode != HttpStatusCode.OK)
         {
             ApnsErrorContent errorContent = await response.Content.ReadFromJsonAsync<ApnsErrorContent>();
-            ApnsError error = ApnsError.FromContent(errorContent);
+            ApnsError? error = ApnsError.FromContent(errorContent);
 
             return ApnsResponse.Failure(error);
         }
@@ -90,7 +95,7 @@ public class ApnsClient : IApnsClient
     {
         new Rule()
             .Property(settings.PushType).IsNotNull()
-            .OnSuccess(() => httpContent.Headers.Add(ApnsPushTypeHeader, settings.PushType.GetApnsString()))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsPushTypeHeader, settings.PushType?.GetApnsString()))
             .Validate();
 
         new Rule()
@@ -98,7 +103,7 @@ public class ApnsClient : IApnsClient
             .Property(settings.PushType).IsEqualsTo(NotificationType.LiveActivity)
             .OnSuccess(() =>
             {
-                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
+                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First();
                 var liveActivityTopicHeader = $"{baseTopicHeader}.push-type.liveactivity";
 
                 httpContent.Headers.Add(ApnsTopicHeader, liveActivityTopicHeader);
@@ -110,7 +115,7 @@ public class ApnsClient : IApnsClient
             .Property(settings.PushType).IsEqualsTo(NotificationType.VoIp)
             .OnSuccess(() =>
             {
-                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First<string>();
+                var baseTopicHeader = httpContent.Headers.GetValues(ApnsTopicHeader).First();
                 var voipTopicHeader = $"{baseTopicHeader}.voip";
 
                 httpContent.Headers.Add(ApnsTopicHeader, voipTopicHeader);
@@ -131,7 +136,7 @@ public class ApnsClient : IApnsClient
 
         new Rule()
             .Property(settings.Priority).IsNotNull()
-            .OnSuccess(() => httpContent.Headers.Add(ApnsPriorityHeader, settings.Priority.GetApnsString()))
+            .OnSuccess(() => httpContent.Headers.Add(ApnsPriorityHeader, settings.Priority?.GetApnsString()))
             .Validate();
 
         new Rule()

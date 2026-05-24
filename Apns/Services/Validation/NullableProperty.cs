@@ -48,7 +48,7 @@ internal sealed class NullableProperty<TValue> : IProperty<TValue> where TValue 
     
     public IRule MatchRegularExpression(string expression)
     {
-        _rule.VerifyThat(() => Regex.IsMatch(_value.ToString(), expression));
+        _rule.VerifyThat(() => _value?.ToString() is string s && Regex.IsMatch(s, expression));
         
         return _rule;
     }

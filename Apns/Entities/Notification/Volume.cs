@@ -31,6 +31,6 @@ public sealed class Volume : ApnsEnumeration, IApnsRepresentable, IEquatable<Vol
 
     public int CompareTo(Volume? other)
     {
-        return Key.CompareTo(other.Key);
+        return Key.CompareTo(other?.Key);
     }
 }

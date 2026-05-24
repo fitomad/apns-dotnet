@@ -10,14 +10,14 @@ public sealed class Priority : ApnsEnumeration, IApnsRepresentable, IEquatable<P
     {
     }
     
-    public bool Equals(Priority other)
+    public bool Equals(Priority? other)
     {
-        return Key == other.Key;
+        return Key == other?.Key;
     }
 
-    public int CompareTo(Priority other)
+    public int CompareTo(Priority? other)
     {
-        return Key.CompareTo(other.Key);
+        return Key.CompareTo(other?.Key);
     }
 
     public string GetApnsString()

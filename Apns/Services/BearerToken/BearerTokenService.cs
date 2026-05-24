@@ -21,12 +21,10 @@ public class BearerTokenService : IBearerTokenService
         _cache = cache;
     }
 
-    public string GetBearerToken()
+    public string? GetBearerToken()
     {
-        ApnsJsonToken jsonToken = _settings.JsonToken!;
-
         string? currBearerToken = _cache.GetString(BEARER_TOKEN_KEY);
-        if (currBearerToken is null)
+        if (currBearerToken is null && _settings.JsonToken is { Content: not null } jsonToken)
         {
             var privateKey = LoadPrivateKey(jsonToken.Content);
             var securityKey = new ECDsaSecurityKey(privateKey);

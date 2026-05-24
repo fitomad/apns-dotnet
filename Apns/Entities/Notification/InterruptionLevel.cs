@@ -11,14 +11,14 @@ public sealed class InterruptionLevel : ApnsEnumeration, IApnsRepresentable,IEqu
     {
     }
     
-    public bool Equals(InterruptionLevel other)
+    public bool Equals(InterruptionLevel? other)
     {
-        return Key == other.Key;
+        return Key == other?.Key;
     }
 
-    public int CompareTo(InterruptionLevel other)
+    public int CompareTo(InterruptionLevel? other)
     {
-        return Key.CompareTo(other.Key);
+        return Key.CompareTo(other?.Key);
     }
 
     public string GetApnsString()
